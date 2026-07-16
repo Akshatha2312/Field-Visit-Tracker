@@ -1,3 +1,28 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 
-# Create your tests here.
+from attendance.models import Attendance
+from employee.models import Employee
+from visits.models import ClientVisit
+
+
+class ReportsPdfExportTests(TestCase):
+    def test_download_pdf_returns_pdf_response(self):
+        user = get_user_model().objects.create_user(username="reporter", email="reporter@example.com", password="secret123")
+        employee = Employee.objects.create(user=user, name="Alice", email="alice@example.com", password="secret123")
+        Attendance.objects.create(employee=employee, date="2024-01-10", status=Attendance.Status.PRESENT)
+        ClientVisit.objects.create(
+            employee=employee,
+            client_name="John Doe",
+            company_name="Acme",
+            visit_date="2024-01-10",
+            location="Nairobi",
+            status=ClientVisit.Status.PENDING,
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("reports:download_pdf"), {"from_date": "2024-01-01", "to_date": "2024-01-31"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")

@@ -10,6 +10,7 @@ from employee.models import Employee
 
 from .forms import ClientVisitForm
 from .models import ClientVisit
+from .utils import send_visit_completed_email, send_visit_created_email
 
 
 def get_employee_for_user(user):
@@ -47,6 +48,7 @@ def visit_create(request):
             visit = form.save(commit=False)
             visit.employee = employee
             visit.save()
+            send_visit_created_email(employee, visit)
             messages.success(request, "Client visit added successfully.")
             return redirect("visits:list")
     else:
@@ -91,6 +93,7 @@ def mark_completed(request, pk):
     visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
     visit.status = ClientVisit.Status.COMPLETED
     visit.save(update_fields=["status"])
+    send_visit_completed_email(employee, visit)
     messages.success(request, "Visit marked as completed.")
     return redirect("visits:list")
 

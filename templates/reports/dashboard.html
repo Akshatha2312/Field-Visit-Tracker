@@ -40,8 +40,9 @@
                         <option value="Completed" {% if visit_status == 'Completed' %}selected{% endif %}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-1 d-grid">
+                <div class="col-md-2 d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Generate Report</button>
+                    <button type="submit" class="btn btn-outline-danger" formaction="{% url 'reports:download_pdf' %}">Download PDF</button>
                 </div>
             </form>
         </div>
