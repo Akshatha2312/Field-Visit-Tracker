@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h1 class="h3 fw-bold text-primary">Dashboard</h1>
+            <h1 class="h3 fw-bold text-primary mb-1">Dashboard</h1>
             <p class="text-muted mb-0">Welcome back, {{ request.user.username }}.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-primary">Attendance</a>
             <a href="{% url 'visits:list' %}" class="btn btn-outline-success">Visits</a>
             <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-dark">Reports</a>
@@ -18,10 +18,10 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-sm-6 col-lg-4">
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="card shadow-sm border-0 rounded-4 h-100 bg-primary-subtle">
-                <div class="card-body d-flex align-items-center">
+                <div class="card-body d-flex align-items-center p-4">
                     <div class="me-3 fs-2">👥</div>
                     <div>
                         <h6 class="text-muted mb-1">Total Employees</h6>
@@ -31,33 +31,33 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="card shadow-sm border-0 rounded-4 h-100 bg-info-subtle">
-                <div class="card-body d-flex align-items-center">
+                <div class="card-body d-flex align-items-center p-4">
                     <div class="me-3 fs-2">📝</div>
                     <div>
-                        <h6 class="text-muted mb-1">Total Attendance Records</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.total_attendance_records }}</h3>
+                        <h6 class="text-muted mb-1">Today's Attendance</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.todays_attendance }}</h3>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="card shadow-sm border-0 rounded-4 h-100 bg-warning-subtle">
-                <div class="card-body d-flex align-items-center">
+                <div class="card-body d-flex align-items-center p-4">
                     <div class="me-3 fs-2">🏢</div>
                     <div>
-                        <h6 class="text-muted mb-1">Total Client Visits</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.total_client_visits }}</h3>
+                        <h6 class="text-muted mb-1">Today's Client Visits</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.todays_client_visits }}</h3>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-4">
+        <div class="col-sm-6 col-xl-3">
             <div class="card shadow-sm border-0 rounded-4 h-100 bg-danger-subtle">
-                <div class="card-body d-flex align-items-center">
+                <div class="card-body d-flex align-items-center p-4">
                     <div class="me-3 fs-2">⏳</div>
                     <div>
                         <h6 class="text-muted mb-1">Pending Visits</h6>
@@ -66,18 +66,143 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-success-subtle">
-                <div class="card-body d-flex align-items-center">
-                    <div class="me-3 fs-2">✅</div>
-                    <div>
-                        <h6 class="text-muted mb-1">Completed Visits</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.completed_visits }}</h3>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-semibold mb-3">Attendance Overview</h5>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="attendanceChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-semibold mb-3">Monthly Client Visits</h5>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="monthlyVisitsChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-semibold mb-3">Visit Status</h5>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="visitStatusChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-semibold mb-3">Employee-wise Visits</h5>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="employeeVisitsChart" class="w-100"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .chart-shell {
+        min-height: 320px;
+        max-height: 320px;
+        overflow: hidden;
+    }
+
+    .card {
+        box-shadow: 0 0.25rem 1rem rgba(15, 23, 42, 0.08) !important;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('{% url "analytics_data" %}')
+            .then(response => response.json())
+            .then(data => {
+                const attendanceCtx = document.getElementById('attendanceChart');
+                new Chart(attendanceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.attendance.labels,
+                        datasets: [{
+                            data: data.attendance.values,
+                            backgroundColor: ['#0d6efd', '#dc3545']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+
+                const monthlyCtx = document.getElementById('monthlyVisitsChart');
+                new Chart(monthlyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.monthly_visits.labels,
+                        datasets: [{
+                            label: 'Visits',
+                            data: data.monthly_visits.values,
+                            backgroundColor: '#198754'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                const visitStatusCtx = document.getElementById('visitStatusChart');
+                new Chart(visitStatusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.visit_status.labels,
+                        datasets: [{
+                            data: data.visit_status.values,
+                            backgroundColor: ['#198754', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+
+                const employeeVisitsCtx = document.getElementById('employeeVisitsChart');
+                new Chart(employeeVisitsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.employee_visits.labels,
+                        datasets: [{
+                            label: 'Visits',
+                            data: data.employee_visits.values,
+                            backgroundColor: '#0dcaf0'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            });
+    });
+</script>
 {% endblock %}
