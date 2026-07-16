@@ -15,12 +15,35 @@
         </div>
     </div>
 
-    <form method="get" class="row g-2 mb-4">
-        <div class="col-md-8">
-            <input type="text" name="q" class="form-control" placeholder="Search by client or company" value="{{ search_query }}">
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-outline-primary w-100">Search</button>
+    <form method="get" class="card shadow-sm border-0 rounded-4 p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label">Client Name</label>
+                <input type="text" name="client_name" class="form-control" value="{{ client_name_filter }}" placeholder="Client name">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Company</label>
+                <input type="text" name="company" class="form-control" value="{{ company_filter }}" placeholder="Company">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Location</label>
+                <input type="text" name="location" class="form-control" value="{{ location_filter }}" placeholder="Location">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Employee</label>
+                <input type="text" name="employee" class="form-control" value="{{ employee_filter }}" placeholder="Employee">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
         </div>
     </form>
 
@@ -67,6 +90,38 @@
                         </tbody>
                     </table>
                 </div>
+
+                {% if page_obj.paginator.num_pages > 1 %}
+                    <nav aria-label="Visit pagination" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={{ search_query|urlencode }}&client_name={{ client_name_filter|urlencode }}&company={{ company_filter|urlencode }}&location={{ location_filter|urlencode }}&employee={{ employee_filter|urlencode }}&status={{ status_filter }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                            {% endif %}
+
+                            {% for page_num in page_obj.paginator.page_range %}
+                                {% if page_num == page_obj.number %}
+                                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?q={{ search_query|urlencode }}&client_name={{ client_name_filter|urlencode }}&company={{ company_filter|urlencode }}&location={{ location_filter|urlencode }}&employee={{ employee_filter|urlencode }}&status={{ status_filter }}&page={{ page_num }}">{{ page_num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={{ search_query|urlencode }}&client_name={{ client_name_filter|urlencode }}&company={{ company_filter|urlencode }}&location={{ location_filter|urlencode }}&employee={{ employee_filter|urlencode }}&status={{ status_filter }}&page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
             {% else %}
                 <p class="text-muted mb-0">No visits found.</p>
             {% endif %}

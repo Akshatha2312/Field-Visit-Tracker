@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Employees | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1">Employees</h1>
+            <p class="text-muted mb-0">Manage and search employee records.</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="">All Roles</option>
+                        <option value="Employee" {% if role_filter == 'Employee' %}selected{% endif %}>Employee</option>
+                        <option value="Admin" {% if role_filter == 'Admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ name_filter }}" placeholder="Filter by name">
+                </div>
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="q" value="{{ search_query }}" placeholder="Search by name or email">
+                </div>
+                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+
+            <div class="table-responsive mt-4">
+                {% if employees %}
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Employee Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                                <tr>
+                                    <td>{{ employee.id }}</td>
+                                    <td>{{ employee.name }}</td>
+                                    <td>{{ employee.email }}</td>
+                                    <td>{{ employee.role }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted mb-0">No employees found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

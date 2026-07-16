@@ -53,11 +53,16 @@ def analytics_data(request):
     attendance_status_data = (
         Attendance.objects.values('status').annotate(count=Count('id')).order_by('status')
     )
-    attendance_labels = []
-    attendance_values = []
+    attendance_status_map = {
+        Attendance.Status.PRESENT: 0,
+        Attendance.Status.ABSENT: 0,
+    }
     for item in attendance_status_data:
-        attendance_labels.append(item['status'])
-        attendance_values.append(item['count'])
+        if item['status'] in attendance_status_map:
+            attendance_status_map[item['status']] = item['count']
+
+    attendance_labels = [Attendance.Status.PRESENT, Attendance.Status.ABSENT]
+    attendance_values = [attendance_status_map[Attendance.Status.PRESENT], attendance_status_map[Attendance.Status.ABSENT]]
 
     monthly_visits = (
         ClientVisit.objects.filter(visit_date__year=current_year)
@@ -78,11 +83,16 @@ def analytics_data(request):
     visit_status_data = (
         ClientVisit.objects.values('status').annotate(count=Count('id')).order_by('status')
     )
-    visit_status_labels = []
-    visit_status_values = []
+    visit_status_map = {
+        ClientVisit.Status.PENDING: 0,
+        ClientVisit.Status.COMPLETED: 0,
+    }
     for item in visit_status_data:
-        visit_status_labels.append(item['status'])
-        visit_status_values.append(item['count'])
+        if item['status'] in visit_status_map:
+            visit_status_map[item['status']] = item['count']
+
+    visit_status_labels = [ClientVisit.Status.PENDING, ClientVisit.Status.COMPLETED]
+    visit_status_values = [visit_status_map[ClientVisit.Status.PENDING], visit_status_map[ClientVisit.Status.COMPLETED]]
 
     employee_visits = (
         ClientVisit.objects.values('employee__name').annotate(count=Count('id')).order_by('-count', 'employee__name')

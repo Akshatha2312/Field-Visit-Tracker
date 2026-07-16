@@ -2,14 +2,17 @@ from datetime import date
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from employee.models import Employee
 
 from .forms import ClientVisitForm
 from .models import ClientVisit
+from .serializers import ClientVisitSerializer
 from .utils import send_visit_completed_email, send_visit_created_email
 
 
@@ -28,11 +31,64 @@ def visit_list(request):
         queryset = ClientVisit.objects.filter(employee=employee)
 
     search_query = request.GET.get("q", "").strip()
-    if search_query:
-        queryset = queryset.filter(Q(client_name__icontains=search_query) | Q(company_name__icontains=search_query))
+    client_name_filter = request.GET.get("client_name", "").strip()
+    company_filter = request.GET.get("company", "").strip()
+    location_filter = request.GET.get("location", "").strip()
+    employee_filter = request.GET.get("employee", "").strip()
+    status_filter = request.GET.get("status", "").strip()
 
-    visits = queryset.order_by("-visit_date", "-created_at")
-    return render(request, "visits/list.html", {"visits": visits, "search_query": search_query})
+    if search_query:
+        queryset = queryset.filter(
+            Q(client_name__icontains=search_query)
+            | Q(company_name__icontains=search_query)
+            | Q(location__icontains=search_query)
+            | Q(employee__name__icontains=search_query)
+        )
+
+    if client_name_filter:
+        queryset = queryset.filter(client_name__icontains=client_name_filter)
+
+    if company_filter:
+        queryset = queryset.filter(company_name__icontains=company_filter)
+
+    if location_filter:
+        queryset = queryset.filter(location__icontains=location_filter)
+
+    if employee_filter:
+        queryset = queryset.filter(employee__name__icontains=employee_filter)
+
+    if status_filter:
+        queryset = queryset.filter(status=status_filter)
+
+    visits_list = queryset.select_related("employee").order_by("-visit_date", "-created_at")
+    paginator = Paginator(visits_list, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "visits/list.html",
+        {
+            "visits": page_obj.object_list,
+            "page_obj": page_obj,
+            "search_query": search_query,
+            "client_name_filter": client_name_filter,
+            "company_filter": company_filter,
+            "location_filter": location_filter,
+            "employee_filter": employee_filter,
+            "status_filter": status_filter,
+        },
+    )
+
+
+class ClientVisitListView(ListAPIView):
+    queryset = ClientVisit.objects.select_related("employee").order_by("-visit_date", "-created_at")
+    serializer_class = ClientVisitSerializer
+
+
+class ClientVisitDetailView(RetrieveAPIView):
+    queryset = ClientVisit.objects.select_related("employee").order_by("-visit_date", "-created_at")
+    serializer_class = ClientVisitSerializer
 
 
 @login_required(login_url="login")

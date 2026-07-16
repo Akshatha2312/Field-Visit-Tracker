@@ -23,5 +23,9 @@ urlpatterns = [
     path('visits/', include(('visits.urls', 'visits'), namespace='visits')),
     path('profile/', include(('employee.urls', 'employee'), namespace='employee')),
     path('reports/', include(('reports.urls', 'reports'), namespace='reports')),
+    path('api/', include('rest_framework.urls')),
+    path('api/employees/', include(('employee.api_urls', 'employee_api'), namespace='employee_api')),
+    path('api/attendance/', include(('attendance.api_urls', 'attendance_api'), namespace='attendance_api')),
+    path('api/visits/', include(('visits.api_urls', 'visits_api'), namespace='visits_api')),
     path('admin/', admin.site.urls),
 ]

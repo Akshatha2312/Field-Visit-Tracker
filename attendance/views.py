@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from employee.models import Employee
 
 from .models import Attendance
+from .serializers import AttendanceSerializer
 from .utils import send_checkin_email, send_checkout_email
 
 
@@ -90,9 +93,42 @@ def check_out(request):
 @login_required(login_url="login")
 def attendance_history(request):
     employee = get_employee_for_user(request.user)
-    attendances = []
+    attendances_qs = Attendance.objects.none()
 
     if employee is not None:
-        attendances = Attendance.objects.filter(employee=employee).order_by("-date", "-check_in")
+        attendances_qs = Attendance.objects.filter(employee=employee)
 
-    return render(request, "attendance/history.html", {"attendances": attendances})
+    date_filter = request.GET.get("date", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
+    if date_filter:
+        attendances_qs = attendances_qs.filter(date=date_filter)
+
+    if status_filter:
+        attendances_qs = attendances_qs.filter(status=status_filter)
+
+    attendances = attendances_qs.order_by("-date", "-check_in")
+    paginator = Paginator(attendances, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "attendance/history.html",
+        {
+            "attendances": page_obj.object_list,
+            "page_obj": page_obj,
+            "date_filter": date_filter,
+            "status_filter": status_filter,
+        },
+    )
+
+
+class AttendanceListView(ListAPIView):
+    queryset = Attendance.objects.select_related("employee").order_by("-date", "-check_in")
+    serializer_class = AttendanceSerializer
+
+
+class AttendanceDetailView(RetrieveAPIView):
+    queryset = Attendance.objects.select_related("employee").order_by("-date", "-check_in")
+    serializer_class = AttendanceSerializer

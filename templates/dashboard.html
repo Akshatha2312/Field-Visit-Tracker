@@ -13,6 +13,7 @@
             <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-primary">Attendance</a>
             <a href="{% url 'visits:list' %}" class="btn btn-outline-success">Visits</a>
             <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-dark">Reports</a>
+            <a href="{% url 'employee:list' %}" class="btn btn-outline-secondary">Employees</a>
             <a href="{% url 'employee:profile' %}" class="btn btn-outline-info">Profile</a>
             <a href="{% url 'logout' %}" class="btn btn-outline-danger">Logout</a>
         </div>
@@ -69,7 +70,7 @@
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-semibold mb-3">Attendance Overview</h5>
@@ -80,7 +81,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-semibold mb-3">Monthly Client Visits</h5>
@@ -91,7 +92,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-semibold mb-3">Visit Status</h5>
@@ -102,7 +103,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="card shadow-sm border-0 rounded-4 h-100 p-3">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-semibold mb-3">Employee-wise Visits</h5>
@@ -117,19 +118,66 @@
 
 <style>
     .chart-shell {
-        min-height: 320px;
-        max-height: 320px;
-        overflow: hidden;
+        min-height: 280px;
+        height: clamp(260px, 34vh, 340px);
+        width: 100%;
+        position: relative;
     }
 
     .card {
         box-shadow: 0 0.25rem 1rem rgba(15, 23, 42, 0.08) !important;
     }
+
+    @media (max-width: 767.98px) {
+        .chart-shell {
+            height: 260px;
+        }
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        Chart.register(ChartDataLabels);
+
+        const commonDoughnutOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+                datalabels: {
+                    color: '#111827',
+                    font: { weight: 'bold', size: 12 },
+                    formatter: (value) => value || 0
+                }
+            }
+        };
+
+        const commonBarOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    color: '#111827',
+                    font: { weight: 'bold', size: 11 },
+                    formatter: (value) => value || 0
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                },
+                x: {
+                    ticks: { autoSkip: false }
+                }
+            }
+        };
+
         fetch('{% url "analytics_data" %}')
             .then(response => response.json())
             .then(data => {
@@ -143,11 +191,7 @@
                             backgroundColor: ['#0d6efd', '#dc3545']
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
+                    options: commonDoughnutOptions
                 });
 
                 const monthlyCtx = document.getElementById('monthlyVisitsChart');
@@ -161,11 +205,7 @@
                             backgroundColor: '#198754'
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
-                    }
+                    options: commonBarOptions
                 });
 
                 const visitStatusCtx = document.getElementById('visitStatusChart');
@@ -178,11 +218,7 @@
                             backgroundColor: ['#198754', '#ffc107']
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
+                    options: commonDoughnutOptions
                 });
 
                 const employeeVisitsCtx = document.getElementById('employeeVisitsChart');
@@ -197,9 +233,17 @@
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
+                        ...commonBarOptions,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 }
+                            },
+                            y: {
+                                ticks: { autoSkip: false }
+                            }
+                        }
                     }
                 });
             });

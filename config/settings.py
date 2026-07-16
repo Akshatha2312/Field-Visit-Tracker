@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'visits',
     'dashboard',
     'reports',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
