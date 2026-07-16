@@ -12,9 +12,120 @@
         <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
     </div>
 
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="from_date" class="form-label">From Date</label>
+                    <input type="date" class="form-control" id="from_date" name="from_date" value="{{ from_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="to_date" class="form-label">To Date</label>
+                    <input type="date" class="form-control" id="to_date" name="to_date" value="{{ to_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="employee" class="form-label">Employee</label>
+                    <select class="form-select" id="employee" name="employee">
+                        <option value="">All</option>
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}" {% if employee.id|stringformat:"s" == employee_id %}selected{% endif %}>{{ employee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Visit Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All</option>
+                        <option value="Pending" {% if visit_status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Completed" {% if visit_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 bg-info-subtle">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Attendance Records</h6>
+                    <h3 class="fw-bold mb-0">{{ total_attendance_records }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 bg-success-subtle">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Present</h6>
+                    <h3 class="fw-bold mb-0">{{ total_present }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 bg-primary-subtle">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Client Visits</h6>
+                    <h3 class="fw-bold mb-0">{{ total_client_visits }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 bg-warning-subtle">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending Visits</h6>
+                    <h3 class="fw-bold mb-0">{{ pending_visits }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100 bg-success-subtle">
+                <div class="card-body">
+                    <h6 class="text-muted">Completed Visits</h6>
+                    <h3 class="fw-bold mb-0">{{ completed_visits }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
-            <p class="text-muted mb-0">This reports page is ready for your future analytics and summaries.</p>
+            {% if visits %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Client Name</th>
+                                <th>Company Name</th>
+                                <th>Visit Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visit in visits %}
+                                <tr>
+                                    <td>{{ visit.employee.name }}</td>
+                                    <td>{{ visit.client_name }}</td>
+                                    <td>{{ visit.company_name }}</td>
+                                    <td>{{ visit.visit_date }}</td>
+                                    <td>
+                                        {% if visit.status == 'Completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">No records found.</p>
+            {% endif %}
         </div>
     </div>
 </div>
