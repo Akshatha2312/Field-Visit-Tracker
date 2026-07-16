@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Client Visits | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-primary">Client Visits</h1>
+            <p class="text-muted mb-0">Manage your scheduled visits.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+            <a href="{% url 'visits:create' %}" class="btn btn-primary">Add Visit</a>
+        </div>
+    </div>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-8">
+            <input type="text" name="q" class="form-control" placeholder="Search by client or company" value="{{ search_query }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-outline-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            {% if visits %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Company</th>
+                                <th>Visit Date</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visit in visits %}
+                                <tr>
+                                    <td>{{ visit.client_name }}</td>
+                                    <td>{{ visit.company_name }}</td>
+                                    <td>{{ visit.visit_date }}</td>
+                                    <td>
+                                        {% if visit.status == 'Completed' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ visit.location }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'visits:edit' visit.pk %}" class="btn btn-outline-primary">Edit</a>
+                                            {% if visit.status != 'Completed' %}
+                                                <a href="{% url 'visits:complete' visit.pk %}" class="btn btn-outline-success">Complete</a>
+                                            {% endif %}
+                                            <a href="{% url 'visits:delete' visit.pk %}" class="btn btn-outline-danger">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">No visits found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

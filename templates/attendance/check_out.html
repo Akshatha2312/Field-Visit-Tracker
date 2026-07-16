@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Check Out | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 fw-bold text-primary mb-3">Check Out</h2>
+                    <p class="text-muted">End your attendance session for today.</p>
+                    {% if attendance and attendance.check_out is None %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-warning">Confirm Check Out</button>
+                                <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    {% else %}
+                        <p class="text-muted mb-3">No active check-out is available for today.</p>
+                        <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

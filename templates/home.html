@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-5 text-center">
+                    <h1 class="display-5 fw-bold text-primary">Field Visit Tracker</h1>
+                    <p class="lead text-muted mt-3">Employee Visit Management System</p>
+                    <p class="text-secondary mt-4">Manage employee attendance and client visits efficiently from one place.</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 mt-3">Employee Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
