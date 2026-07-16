@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.utils import timezone
 
 from attendance.models import Attendance
 from employee.models import Employee
 from visits.models import ClientVisit
 
+from .excel_utils import build_excel_response
 from .pdf_utils import build_pdf_response
 
 
@@ -50,6 +52,7 @@ def _get_report_context(request):
         'visit_status': visit_status,
         'attendance_records': attendance_records,
         'visits': visits,
+        'generated_at': timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S'),
         'total_attendance_records': attendance_records.count(),
         'total_present': attendance_records.filter(status=Attendance.Status.PRESENT).count(),
         'total_client_visits': visits.count(),
@@ -68,3 +71,9 @@ def report_dashboard(request):
 def download_pdf(request):
     context = _get_report_context(request)
     return build_pdf_response(context)
+
+
+@login_required(login_url='login')
+def download_excel(request):
+    context = _get_report_context(request)
+    return build_excel_response(context)

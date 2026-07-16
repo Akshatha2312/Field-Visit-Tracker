@@ -26,3 +26,22 @@ class ReportsPdfExportTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
+
+    def test_download_excel_returns_excel_response(self):
+        user = get_user_model().objects.create_user(username="reporter2", email="reporter2@example.com", password="secret123")
+        employee = Employee.objects.create(user=user, name="Bob", email="bob@example.com", password="secret123")
+        Attendance.objects.create(employee=employee, date="2024-01-11", status=Attendance.Status.PRESENT)
+        ClientVisit.objects.create(
+            employee=employee,
+            client_name="Jane Doe",
+            company_name="Beta",
+            visit_date="2024-01-11",
+            location="Nairobi",
+            status=ClientVisit.Status.COMPLETED,
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("reports:download_excel"), {"from_date": "2024-01-01", "to_date": "2024-01-31"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
