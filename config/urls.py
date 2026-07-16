@@ -22,5 +22,6 @@ urlpatterns = [
     path('attendance/', include(('attendance.urls', 'attendance'), namespace='attendance')),
     path('visits/', include(('visits.urls', 'visits'), namespace='visits')),
     path('profile/', include(('employee.urls', 'employee'), namespace='employee')),
+    path('reports/', include(('reports.urls', 'reports'), namespace='reports')),
     path('admin/', admin.site.urls),
 ]

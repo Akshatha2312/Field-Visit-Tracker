@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-primary">Reports</h1>
+            <p class="text-muted mb-0">Overview of your activity in the Field Visit Tracker.</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <p class="text-muted mb-0">This reports page is ready for your future analytics and summaries.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
