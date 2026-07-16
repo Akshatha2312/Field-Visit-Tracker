@@ -4,37 +4,37 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h1 class="h3 fw-bold text-primary">Client Visits</h1>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-geo-alt-fill me-2"></i>Client Visits</h1>
             <p class="text-muted mb-0">Manage your scheduled visits.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
-            <a href="{% url 'visits:create' %}" class="btn btn-primary">Add Visit</a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a href="{% url 'visits:create' %}" class="btn btn-primary btn-loading"><i class="bi bi-plus-circle me-2"></i>Add Visit</a>
         </div>
     </div>
 
-    <form method="get" class="card shadow-sm border-0 rounded-4 p-3 mb-4">
+    <form method="get" class="card modern-card p-3 mb-4">
         <div class="row g-3 align-items-end">
             <div class="col-md-2">
-                <label class="form-label">Client Name</label>
+                <label class="form-label"><i class="bi bi-person me-2"></i>Client Name</label>
                 <input type="text" name="client_name" class="form-control" value="{{ client_name_filter }}" placeholder="Client name">
             </div>
             <div class="col-md-2">
-                <label class="form-label">Company</label>
+                <label class="form-label"><i class="bi bi-building me-2"></i>Company</label>
                 <input type="text" name="company" class="form-control" value="{{ company_filter }}" placeholder="Company">
             </div>
             <div class="col-md-2">
-                <label class="form-label">Location</label>
+                <label class="form-label"><i class="bi bi-geo-alt me-2"></i>Location</label>
                 <input type="text" name="location" class="form-control" value="{{ location_filter }}" placeholder="Location">
             </div>
             <div class="col-md-2">
-                <label class="form-label">Employee</label>
+                <label class="form-label"><i class="bi bi-person-badge me-2"></i>Employee</label>
                 <input type="text" name="employee" class="form-control" value="{{ employee_filter }}" placeholder="Employee">
             </div>
             <div class="col-md-2">
-                <label class="form-label">Status</label>
+                <label class="form-label"><i class="bi bi-funnel me-2"></i>Status</label>
                 <select name="status" class="form-select">
                     <option value="">All</option>
                     <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
@@ -42,13 +42,13 @@
                 </select>
             </div>
             <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
+                <button type="submit" class="btn btn-outline-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Search</span></button>
             </div>
         </div>
     </form>
 
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body">
+    <div class="card modern-card">
+        <div class="card-body p-4">
             {% if visits %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -78,11 +78,11 @@
                                     <td>{{ visit.location }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{% url 'visits:edit' visit.pk %}" class="btn btn-outline-primary">Edit</a>
+                                            <a href="{% url 'visits:edit' visit.pk %}" class="btn btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Edit</a>
                                             {% if visit.status != 'Completed' %}
-                                                <a href="{% url 'visits:complete' visit.pk %}" class="btn btn-outline-success">Complete</a>
+                                                <a href="{% url 'visits:complete' visit.pk %}" class="btn btn-outline-success btn-loading"><i class="bi bi-check2-circle me-1"></i>Complete</a>
                                             {% endif %}
-                                            <a href="{% url 'visits:delete' visit.pk %}" class="btn btn-outline-danger">Delete</a>
+                                            <a href="{% url 'visits:delete' visit.pk %}" class="btn btn-outline-danger confirm-delete" data-delete-url="{% url 'visits:delete' visit.pk %}"><i class="bi bi-trash-fill me-1"></i>Delete</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -123,9 +123,21 @@
                     </nav>
                 {% endif %}
             {% else %}
-                <p class="text-muted mb-0">No visits found.</p>
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="bi bi-geo-alt"></i></div>
+                    <h5 class="fw-semibold mb-2">No Visits Found</h5>
+                    <p class="text-muted mb-0">Try changing the filters or create a new visit.</p>
+                </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+</style>
 {% endblock %}

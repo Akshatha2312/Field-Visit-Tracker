@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h1 class="h3 fw-bold text-primary">Reports</h1>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reports</h1>
             <p class="text-muted mb-0">Overview of your activity in the Field Visit Tracker.</p>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card modern-card mb-4">
         <div class="card-body p-4">
             <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-3">
@@ -40,11 +40,13 @@
                         <option value="Completed" {% if visit_status == 'Completed' %}selected{% endif %}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Generate Report</button>
-                    <button type="submit" class="btn btn-outline-danger" formaction="{% url 'reports:download_pdf' %}">Download PDF</button>
-                    <button type="submit" class="btn btn-outline-success" formaction="{% url 'reports:download_excel' %}">Download Excel</button>
-                    <button type="submit" class="btn btn-outline-dark" formaction="{% url 'reports:download_csv' %}">Download CSV</button>
+                <div class="col-md-1 d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Go</span></button>
+                </div>
+                <div class="col-12 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
+                    <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
+                    <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
                 </div>
             </form>
         </div>
@@ -58,7 +60,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-info-subtle">
+            <div class="card modern-card stat-card primary-card h-100">
                 <div class="card-body">
                     <h6 class="text-muted">Total Attendance Records</h6>
                     <h3 class="fw-bold mb-0">{{ total_attendance_records }}</h3>
@@ -66,7 +68,7 @@
             </div>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-success-subtle">
+            <div class="card modern-card stat-card success-card h-100">
                 <div class="card-body">
                     <h6 class="text-muted">Total Present</h6>
                     <h3 class="fw-bold mb-0">{{ total_present }}</h3>
@@ -74,7 +76,7 @@
             </div>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-primary-subtle">
+            <div class="card modern-card stat-card info-card h-100">
                 <div class="card-body">
                     <h6 class="text-muted">Total Client Visits</h6>
                     <h3 class="fw-bold mb-0">{{ total_client_visits }}</h3>
@@ -82,7 +84,7 @@
             </div>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-warning-subtle">
+            <div class="card modern-card stat-card warning-card h-100">
                 <div class="card-body">
                     <h6 class="text-muted">Pending Visits</h6>
                     <h3 class="fw-bold mb-0">{{ pending_visits }}</h3>
@@ -90,7 +92,7 @@
             </div>
         </div>
         <div class="col-sm-6 col-lg-4">
-            <div class="card shadow-sm border-0 rounded-4 h-100 bg-success-subtle">
+            <div class="card modern-card stat-card success-card h-100">
                 <div class="card-body">
                     <h6 class="text-muted">Completed Visits</h6>
                     <h3 class="fw-bold mb-0">{{ completed_visits }}</h3>
@@ -99,7 +101,7 @@
         </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-4">
+    <div class="card modern-card">
         <div class="card-body p-4">
             {% if invalid_filters %}
                 <p class="text-muted mb-0">No report data can be shown for the selected range yet.</p>
@@ -135,9 +137,28 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-muted mb-0">No records found.</p>
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="bi bi-file-earmark-x"></i></div>
+                    <h5 class="fw-semibold mb-2">No Report Records Found</h5>
+                    <p class="text-muted mb-0">Try changing the filters or selecting a different date range.</p>
+                </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .primary-card { background: linear-gradient(135deg, #eef4ff 0%, #ffffff 100%); }
+    .info-card { background: linear-gradient(135deg, #e8f7ff 0%, #ffffff 100%); }
+    .success-card { background: linear-gradient(135deg, #ecfdf3 0%, #ffffff 100%); }
+    .warning-card { background: linear-gradient(135deg, #fff8e8 0%, #ffffff 100%); }
+</style>
 {% endblock %}

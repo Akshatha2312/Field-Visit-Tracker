@@ -6,10 +6,10 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold text-primary">Visit Reports</h1>
+            <h1 class="h3 fw-bold text-primary"><i class="bi bi-clipboard-data me-2"></i>Visit Reports</h1>
             <p class="text-muted mb-0">Summary and history of your visits.</p>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
     </div>
 
     <div class="row g-4 mb-4">
@@ -64,7 +64,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    <button type="submit" class="btn btn-primary w-100 btn-loading"><i class="bi bi-funnel me-2"></i><span class="btn-text">Filter</span></button>
                 </div>
             </form>
         </div>
@@ -104,7 +104,11 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-muted mb-0">No visit records found.</p>
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="bi bi-file-earmark-x"></i></div>
+                    <h5 class="fw-semibold mb-2">No Visit Records Found</h5>
+                    <p class="text-muted mb-0">Try changing the filters to see more results.</p>
+                </div>
             {% endif %}
         </div>
     </div>

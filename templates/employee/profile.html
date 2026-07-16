@@ -6,9 +6,9 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-7">
-            <div class="card shadow-sm border-0 rounded-4">
+            <div class="card modern-card">
                 <div class="card-body p-4">
-                    <h2 class="h4 fw-bold text-primary mb-4">My Profile</h2>
+                    <h2 class="h4 fw-bold text-primary mb-4"><i class="bi bi-person-circle me-2"></i>My Profile</h2>
 
                     {% if messages %}
                         {% for message in messages %}
@@ -16,7 +16,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate class="form-loading">
                         {% csrf_token %}
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger" role="alert">
@@ -54,9 +54,9 @@
                             <label class="form-label" for="id_role">Role</label>
                             {{ form.role }}
                         </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back</a>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-check2-circle me-2"></i><span class="btn-text">Save Changes</span></button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
                         </div>
                     </form>
                 </div>
@@ -64,4 +64,12 @@
         </div>
     </div>
 </div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+</style>
 {% endblock %}

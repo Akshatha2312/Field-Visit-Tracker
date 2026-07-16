@@ -6,15 +6,33 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card border-0 shadow-lg rounded-4">
+            <div class="card modern-card border-0">
                 <div class="card-body p-4 p-md-5 text-center">
+                    <div class="error-icon mb-3">🛠️</div>
                     <h1 class="display-6 fw-bold text-danger">500</h1>
                     <h2 class="h4 fw-bold mb-3">Something went wrong</h2>
                     <p class="text-muted mb-4">We are sorry, but the server encountered an unexpected error. Please try again shortly.</p>
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to dashboard</a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Back to dashboard</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .modern-card {
+        border-radius: 1.2rem;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    }
+    .error-icon {
+        width: 3.2rem;
+        height: 3.2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fff1f2 0%, #fff8f8 100%);
+        font-size: 1.35rem;
+    }
+</style>
 {% endblock %}
