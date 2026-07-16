@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
@@ -6,6 +7,7 @@ from attendance.models import Attendance
 from employee.models import Employee
 from visits.models import ClientVisit
 
+from .csv_utils import build_csv_response
 from .excel_utils import build_excel_response
 from .pdf_utils import build_pdf_response
 
@@ -17,6 +19,10 @@ def _get_report_context(request):
     to_date = request.GET.get('to_date', '').strip()
     employee_id = request.GET.get('employee', '').strip()
     visit_status = request.GET.get('status', '').strip()
+    invalid_filters = False
+
+    if from_date and to_date and from_date > to_date:
+        invalid_filters = True
 
     attendance_queryset = Attendance.objects.select_related('employee')
     visits_queryset = ClientVisit.objects.select_related('employee')
@@ -58,12 +64,15 @@ def _get_report_context(request):
         'total_client_visits': visits.count(),
         'pending_visits': visits.filter(status=ClientVisit.Status.PENDING).count(),
         'completed_visits': visits.filter(status=ClientVisit.Status.COMPLETED).count(),
+        'invalid_filters': invalid_filters,
     }
 
 
 @login_required(login_url='login')
 def report_dashboard(request):
     context = _get_report_context(request)
+    if context.get('invalid_filters'):
+        messages.error(request, 'The selected date range is invalid. Please choose an end date that is on or after the start date.')
     return render(request, 'reports/dashboard.html', context)
 
 
@@ -77,3 +86,9 @@ def download_pdf(request):
 def download_excel(request):
     context = _get_report_context(request)
     return build_excel_response(context)
+
+
+@login_required(login_url='login')
+def download_csv(request):
+    context = _get_report_context(request)
+    return build_csv_response(context)

@@ -44,10 +44,17 @@
                     <button type="submit" class="btn btn-primary">Generate Report</button>
                     <button type="submit" class="btn btn-outline-danger" formaction="{% url 'reports:download_pdf' %}">Download PDF</button>
                     <button type="submit" class="btn btn-outline-success" formaction="{% url 'reports:download_excel' %}">Download Excel</button>
+                    <button type="submit" class="btn btn-outline-dark" formaction="{% url 'reports:download_csv' %}">Download CSV</button>
                 </div>
             </form>
         </div>
     </div>
+
+    {% if invalid_filters %}
+        <div class="alert alert-warning" role="alert">
+            The selected date range is invalid. Please choose an end date that is on or after the start date.
+        </div>
+    {% endif %}
 
     <div class="row g-4 mb-4">
         <div class="col-sm-6 col-lg-4">
@@ -94,7 +101,9 @@
 
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
-            {% if visits %}
+            {% if invalid_filters %}
+                <p class="text-muted mb-0">No report data can be shown for the selected range yet.</p>
+            {% elif visits %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead>

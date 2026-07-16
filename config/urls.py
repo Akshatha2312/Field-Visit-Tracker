@@ -15,7 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.urls import reverse_lazy
+
+from .views import custom_404, custom_500, permission_denied, bad_request
 
 urlpatterns = [
     path('', include('dashboard.urls')),
@@ -27,5 +31,25 @@ urlpatterns = [
     path('api/employees/', include(('employee.api_urls', 'employee_api'), namespace='employee_api')),
     path('api/attendance/', include(('attendance.api_urls', 'attendance_api'), namespace='attendance_api')),
     path('api/visits/', include(('visits.api_urls', 'visits_api'), namespace='visits_api')),
+    path('password-reset/', auth_views.PasswordResetView.as_view(
+        template_name='registration/password_reset_form.html',
+        email_template_name='registration/password_reset_email.html',
+        success_url=reverse_lazy('password_reset_done'),
+    ), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='registration/password_reset_done.html'
+    ), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html',
+        success_url=reverse_lazy('password_reset_complete'),
+    ), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/password_reset_complete.html'
+    ), name='password_reset_complete'),
     path('admin/', admin.site.urls),
 ]
+
+handler400 = bad_request
+handler403 = permission_denied
+handler404 = custom_404
+handler500 = custom_500
