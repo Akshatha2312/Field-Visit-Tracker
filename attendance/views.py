@@ -6,6 +6,7 @@ from django.utils import timezone
 from employee.models import Employee
 
 from .models import Attendance
+from .utils import send_checkin_email, send_checkout_email
 
 
 def get_employee_for_user(user):
@@ -45,12 +46,13 @@ def check_in(request):
             messages.warning(request, "You have already checked in today.")
             return redirect("attendance:dashboard")
 
-        Attendance.objects.create(
+        attendance = Attendance.objects.create(
             employee=employee,
             date=today,
             check_in=timezone.now(),
             status=Attendance.Status.PRESENT,
         )
+        send_checkin_email(employee, attendance)
         messages.success(request, "Check-in recorded successfully.")
         return redirect("attendance:history")
 
@@ -77,6 +79,7 @@ def check_out(request):
 
         attendance.check_out = timezone.now()
         attendance.save(update_fields=["check_out"])
+        send_checkout_email(employee, attendance)
         messages.success(request, "Check-out recorded successfully.")
         return redirect("attendance:history")
 
