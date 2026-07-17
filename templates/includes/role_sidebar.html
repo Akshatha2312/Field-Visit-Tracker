@@ -6,7 +6,7 @@
         </div>
         <div class="list-group list-group-flush">
             {% if is_admin %}
-                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
+                <a href="{% url 'admin_dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
                 <a href="{% url 'attendance:management' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
@@ -15,12 +15,18 @@
                 <a href="{% url 'visits:list' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
                     <i class="bi bi-geo-alt-fill me-2"></i>Visits
                 </a>
+                <a href="{% url 'reports:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports
+                </a>
             {% else %}
                 <a href="{% url 'attendance:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
                     <i class="bi bi-calendar-check me-2"></i>My Attendance
                 </a>
                 <a href="{% url 'visits:list' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
                     <i class="bi bi-geo-alt-fill me-2"></i>My Visits
+                </a>
+                <a href="{% url 'reports:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>My Reports
                 </a>
             {% endif %}
             <a href="{% url 'employee:profile' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">

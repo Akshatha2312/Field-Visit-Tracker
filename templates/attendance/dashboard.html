@@ -10,7 +10,7 @@
             <p class="text-muted mb-0">Today: {{ today }}</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+            <a href="{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-outline-secondary">Dashboard</a>
             <a href="{% url 'logout' %}" class="btn btn-outline-danger">Logout</a>
         </div>
     </div>

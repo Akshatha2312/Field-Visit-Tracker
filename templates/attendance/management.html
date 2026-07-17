@@ -9,7 +9,7 @@
             <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-calendar2-week me-2"></i>Attendance Management</h1>
             <p class="text-muted mb-0">Overview of attendance across all employees.</p>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
+        <a href="{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
     </div>
 
     <div class="card modern-card">

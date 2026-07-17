@@ -12,7 +12,7 @@
                     <h1 class="display-6 fw-bold text-danger">400</h1>
                     <h2 class="h4 fw-bold mb-3">Invalid request</h2>
                     <p class="text-muted mb-4">The request could not be processed because the supplied parameters were invalid.</p>
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Back to dashboard</a>
+                    <a href="{% if request.user.is_authenticated %}{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-primary btn-lg">Back to dashboard</a>
                 </div>
             </div>
         </div>

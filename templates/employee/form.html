@@ -13,37 +13,37 @@
     </div>
 
     <div class="card modern-card">
-        <div class="card-body p-4">
-            <form method="post" class="row g-3">
+        <div class="card-body p-4 p-md-5">
+            <form method="post" class="row g-4">
                 {% csrf_token %}
                 <div class="col-md-6">
-                    <label for="username" class="form-label">Username</label>
+                    <label for="username" class="form-label fw-semibold">Username</label>
                     <input type="text" class="form-control" id="username" name="username" value="{% if employee and employee.user %}{{ employee.user.username }}{% endif %}" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="name" class="form-label">Full Name</label>
+                    <label for="name" class="form-label fw-semibold">Full Name</label>
                     <input type="text" class="form-control" id="name" name="name" value="{{ employee.name|default_if_none:'' }}" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label fw-semibold">Email</label>
                     <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" required>
                 </div>
                 <div class="col-md-6">
-                    <label for="phone_number" class="form-label">Phone Number</label>
+                    <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
                     <input type="number" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}">
                 </div>
                 <div class="col-md-6">
-                    <label for="role" class="form-label">Role</label>
+                    <label for="role" class="form-label fw-semibold">Role</label>
                     <select class="form-select" id="role" name="role">
                         <option value="EMPLOYEE" {% if employee and employee.role == 'EMPLOYEE' %}selected{% endif %}>Employee</option>
                         <option value="ADMIN" {% if employee and employee.role == 'ADMIN' %}selected{% endif %}>Admin</option>
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label fw-semibold">Password</label>
                     <input type="password" class="form-control" id="password" name="password" {% if not employee %}required{% endif %}>
                 </div>
-                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                <div class="col-12 d-grid d-md-flex justify-content-md-end mt-2">
                     <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-check2-circle me-2"></i>Save</button>
                 </div>
             </form>
@@ -54,8 +54,35 @@
 <style>
     .modern-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.1rem;
+        border-radius: 1.2rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+        background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
+    }
+
+    .form-label {
+        margin-bottom: 0.45rem;
+        color: #354F52;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 3rem;
+        border-radius: 0.9rem;
+        border: 1px solid #dfe8de;
+        padding: 0.8rem 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #52796F;
+        box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.16);
+    }
+
+    @media (max-width: 767.98px) {
+        .btn {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}

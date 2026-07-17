@@ -13,7 +13,7 @@
                     <h2 class="h4 fw-bold mb-3">Access denied</h2>
                     <p class="text-muted mb-4">You don't have permission to access this page.</p>
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Return Dashboard</a>
+                        <a href="{% if request.user.is_authenticated %}{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-primary">Return Dashboard</a>
                         <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Logout</a>
                     </div>
                 </div>

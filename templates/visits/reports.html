@@ -9,7 +9,7 @@
             <h1 class="h3 fw-bold text-primary"><i class="bi bi-clipboard-data me-2"></i>Visit Reports</h1>
             <p class="text-muted mb-0">Summary and history of your visits.</p>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+        <a href="{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
     </div>
 
     <div class="row g-4 mb-4">
