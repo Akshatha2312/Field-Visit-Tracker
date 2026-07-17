@@ -20,6 +20,16 @@ class EmployeeModelTests(TestCase):
         self.assertEqual(str(employee), "John Doe")
         self.assertEqual(employee.phone_number, 9876543210)
 
+    def test_employee_defaults_to_employee_role(self):
+        employee = Employee.objects.create(
+            name="Jane Doe",
+            email="jane@example.com",
+            password="secret123",
+        )
+
+        self.assertEqual(employee.role, Employee.Role.EMPLOYEE)
+        self.assertFalse(employee.is_admin)
+
 
 class ProfileViewTests(TestCase):
     def test_profile_update_saves_name_email_and_phone_and_shows_success_message(self):

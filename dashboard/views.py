@@ -7,12 +7,35 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from attendance.models import Attendance
 from employee.models import Employee
+from employee.permissions import is_admin_user
+from employee.utils import get_employee_for_user, get_user_role
 from visits.models import ClientVisit
 
 from .models import ActivityLog
+
+
+def _get_dashboard_redirect_name(user):
+    if not getattr(user, 'is_authenticated', False):
+        return 'employee_dashboard'
+
+    if getattr(user, 'is_superuser', False):
+        return 'admin_dashboard'
+
+    employee = getattr(user, 'employee', None)
+    if employee is None:
+        try:
+            employee = Employee.objects.get(user=user)
+        except Employee.DoesNotExist:
+            return 'employee_dashboard'
+
+    if employee.role == Employee.Role.ADMIN:
+        return 'admin_dashboard'
+
+    return 'employee_dashboard'
 
 
 def home(request):
@@ -20,17 +43,26 @@ def home(request):
 
 
 def login_view(request):
+    redirect_to = request.POST.get('next') or request.GET.get('next') or ''
+
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            next_url = request.POST.get('next') or request.GET.get('next') or 'dashboard'
-            return redirect(next_url)
+
+            if redirect_to and url_has_allowed_host_and_scheme(
+                redirect_to,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(redirect_to)
+
+            return redirect(_get_dashboard_redirect_name(user))
     else:
         form = AuthenticationForm(request)
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form, 'next': redirect_to})
 
 
 def logout_view(request):
@@ -40,6 +72,9 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def dashboard(request):
+    if not is_admin_user(request.user):
+        return redirect('attendance:dashboard')
+
     today = timezone.localdate()
     current_month = today.month
     
@@ -80,11 +115,19 @@ def dashboard(request):
         'employees_present_today': attendance_aggs['today_present'],
     }
     recent_activities = ActivityLog.objects.select_related('employee').order_by('-created_at')[:10]
-    return render(request, 'dashboard.html', {'stats': stats, 'recent_activities': recent_activities})
+    context = {
+        'stats': stats,
+        'recent_activities': recent_activities,
+        'is_admin': is_admin_user(request.user),
+    }
+    return render(request, 'dashboard.html', context)
 
 
 @login_required(login_url='login')
 def analytics_data(request):
+    if not is_admin_user(request.user):
+        return JsonResponse({'detail': 'Forbidden'}, status=403)
+
     today = timezone.localdate()
     current_year = today.year
     current_month = today.month

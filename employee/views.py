@@ -1,20 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from .forms import EmployeeProfileForm
 from .models import Employee
+from .permissions import admin_required, is_admin_user
 from .serializers import EmployeeSerializer
-
-
-def get_employee_for_user(user):
-    if hasattr(user, "employee"):
-        return user.employee
-
-    # Use single query with Q objects instead of two separate queries
-    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
+from .utils import get_employee_for_user
 
 
 @login_required(login_url="login")
@@ -37,6 +32,7 @@ def profile_view(request):
 
 
 @login_required(login_url="login")
+@admin_required
 def employee_list_view(request):
     search_query = request.GET.get("q", "").strip()
     role_filter = request.GET.get("role", "").strip()
@@ -68,7 +64,17 @@ class EmployeeListView(ListAPIView):
     queryset = Employee.objects.order_by("name")
     serializer_class = EmployeeSerializer
 
+    def get_queryset(self):
+        if not is_admin_user(self.request.user):
+            raise PermissionDenied
+        return super().get_queryset()
+
 
 class EmployeeDetailView(RetrieveAPIView):
     queryset = Employee.objects.order_by("name")
     serializer_class = EmployeeSerializer
+
+    def get_queryset(self):
+        if not is_admin_user(self.request.user):
+            raise PermissionDenied
+        return super().get_queryset()

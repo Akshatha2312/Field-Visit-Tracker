@@ -6,8 +6,8 @@ from django.dispatch import receiver
 
 class Employee(models.Model):
     class Role(models.TextChoices):
-        EMPLOYEE = "Employee", "Employee"
-        ADMIN = "Admin", "Admin"
+        EMPLOYEE = "EMPLOYEE", "Employee"
+        ADMIN = "ADMIN", "Admin"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -20,7 +20,12 @@ class Employee(models.Model):
     email = models.EmailField(unique=True)
     phone_number = models.BigIntegerField(blank=True, null=True)
     password = models.CharField(max_length=128)
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.EMPLOYEE)
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.EMPLOYEE,
+        db_default=Role.EMPLOYEE,
+    )
 
     class Meta:
         ordering = ["name"]
@@ -30,10 +35,18 @@ class Employee(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def is_admin(self):
+        return self.role == self.Role.ADMIN
+
 
 @receiver(post_save, sender=Employee)
-def log_employee_activity(sender, instance, created, **kwargs):
+def sync_employee_role_and_log_activity(sender, instance, created, **kwargs):
     from dashboard.models import ActivityLog
+
+    if instance.user_id is not None and instance.user is not None:
+        instance.user.is_staff = instance.is_admin
+        instance.user.save(update_fields=["is_staff"])
 
     if created:
         ActivityLog.objects.create(

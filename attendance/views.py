@@ -4,25 +4,17 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from dashboard.models import ActivityLog
-from employee.models import Employee
+from employee.permissions import get_scoped_queryset
+from employee.utils import get_employee_for_user
 
 from .models import Attendance
 from .serializers import AttendanceSerializer
 from .utils import send_checkin_email, send_checkout_email
-
-
-def get_employee_for_user(user):
-    if hasattr(user, "employee"):
-        return user.employee
-
-    # Use single query with Q objects instead of two separate queries
-    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
 
 
 def _build_attendance_calendar(employee, year, month):
@@ -155,10 +147,7 @@ def check_out(request):
 @login_required(login_url="login")
 def attendance_history(request):
     employee = get_employee_for_user(request.user)
-    attendances_qs = Attendance.objects.none()
-
-    if employee is not None:
-        attendances_qs = Attendance.objects.filter(employee=employee)
+    attendances_qs = get_scoped_queryset(request.user, Attendance.objects.all())
 
     date_filter = request.GET.get("date", "").strip()
     status_filter = request.GET.get("status", "").strip()
@@ -190,7 +179,21 @@ class AttendanceListView(ListAPIView):
     queryset = Attendance.objects.select_related("employee").order_by("-date", "-check_in")
     serializer_class = AttendanceSerializer
 
+    def get_queryset(self):
+        return get_scoped_queryset(
+            self.request.user,
+            self.queryset,
+            employee_field="employee__user",
+        )
+
 
 class AttendanceDetailView(RetrieveAPIView):
     queryset = Attendance.objects.select_related("employee").order_by("-date", "-check_in")
     serializer_class = AttendanceSerializer
+
+    def get_queryset(self):
+        return get_scoped_queryset(
+            self.request.user,
+            self.queryset,
+            employee_field="employee__user",
+        )

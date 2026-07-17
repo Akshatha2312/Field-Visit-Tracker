@@ -7,6 +7,39 @@ from employee.models import Employee
 from visits.models import ClientVisit
 
 
+class ReportsAccessTests(TestCase):
+    def test_employee_reports_only_include_their_own_data(self):
+        user = get_user_model().objects.create_user(username="reporter", email="reporter@example.com", password="secret123")
+        employee = Employee.objects.create(user=user, name="Alice", email="alice@example.com", password="secret123")
+        Attendance.objects.create(employee=employee, date="2024-01-10", status=Attendance.Status.PRESENT)
+        ClientVisit.objects.create(
+            employee=employee,
+            client_name="John Doe",
+            company_name="Acme",
+            visit_date="2024-01-10",
+            location="Nairobi",
+            status=ClientVisit.Status.PENDING,
+        )
+
+        other_employee = Employee.objects.create(name="Bob", email="bob@example.com", password="secret123")
+        Attendance.objects.create(employee=other_employee, date="2024-01-11", status=Attendance.Status.ABSENT)
+        ClientVisit.objects.create(
+            employee=other_employee,
+            client_name="Jane Doe",
+            company_name="Beta",
+            visit_date="2024-01-11",
+            location="Nairobi",
+            status=ClientVisit.Status.COMPLETED,
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("reports:dashboard"), {"from_date": "2024-01-01", "to_date": "2024-01-31"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "John Doe")
+        self.assertNotContains(response, "Jane Doe")
+
+
 class ReportsPdfExportTests(TestCase):
     def test_download_pdf_returns_pdf_response(self):
         user = get_user_model().objects.create_user(username="reporter", email="reporter@example.com", password="secret123")

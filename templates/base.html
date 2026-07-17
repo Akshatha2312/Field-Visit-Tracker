@@ -200,7 +200,11 @@
         </a>
         <div class="d-flex align-items-center gap-3">
             {% if user.is_authenticated %}
-                <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                {% if user.is_staff or user.is_superuser %}
+                    <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'attendance:dashboard' %}"><i class="bi bi-calendar-check me-1"></i>My Attendance</a>
+                {% endif %}
                 <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
             {% else %}
                 <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>

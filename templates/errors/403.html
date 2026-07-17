@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Unauthorized | Field Visit Tracker{% endblock %}
+{% block title %}Forbidden | Field Visit Tracker{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -11,8 +11,11 @@
                     <div class="error-icon mb-3">🔒</div>
                     <h1 class="display-6 fw-bold text-warning">403</h1>
                     <h2 class="h4 fw-bold mb-3">Access denied</h2>
-                    <p class="text-muted mb-4">You do not have permission to access this page. Please sign in with the correct account.</p>
-                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Go to login</a>
+                    <p class="text-muted mb-4">You don't have permission to access this page.</p>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Return Dashboard</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Logout</a>
+                    </div>
                 </div>
             </div>
         </div>

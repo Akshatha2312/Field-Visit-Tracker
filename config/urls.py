@@ -19,7 +19,10 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.urls import reverse_lazy
 
-from .views import custom_404, custom_500, permission_denied, bad_request
+from attendance.views import attendance_dashboard
+from dashboard.views import dashboard as admin_dashboard_view
+
+from .views import bad_request, custom_404, custom_500, permission_denied
 
 urlpatterns = [
     path('', include('dashboard.urls')),
@@ -31,6 +34,8 @@ urlpatterns = [
     path('api/employees/', include(('employee.api_urls', 'employee_api'), namespace='employee_api')),
     path('api/attendance/', include(('attendance.api_urls', 'attendance_api'), namespace='attendance_api')),
     path('api/visits/', include(('visits.api_urls', 'visits_api'), namespace='visits_api')),
+    path('admin-dashboard/', admin_dashboard_view, name='admin_dashboard'),
+    path('employee-dashboard/', attendance_dashboard, name='employee_dashboard'),
     path('password-reset/', auth_views.PasswordResetView.as_view(
         template_name='registration/password_reset_form.html',
         email_template_name='registration/password_reset_email.html',

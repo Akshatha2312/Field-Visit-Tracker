@@ -26,15 +26,72 @@ class LoginFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Please enter a correct')
 
-    def test_authenticated_user_can_access_dashboard(self):
+    def test_admin_login_redirects_to_admin_dashboard(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='admin', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Admin User',
+            email='admin@example.com',
+            password='secret123',
+            role=Employee.Role.ADMIN,
+        )
+
+        response = self.client.post('/login/', {'username': 'admin', 'password': 'strongpass123'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('admin_dashboard'))
+
+    def test_employee_login_redirects_to_employee_dashboard(self):
         User = get_user_model()
         user = User.objects.create_user(username='employee', password='strongpass123')
-        self.client.login(username='employee', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Employee User',
+            email='employee@example.com',
+            password='secret123',
+            role=Employee.Role.EMPLOYEE,
+        )
+
+        response = self.client.post('/login/', {'username': 'employee', 'password': 'strongpass123'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('employee_dashboard'))
+
+    def test_authenticated_user_can_access_dashboard(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='admin', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Admin User',
+            email='admin@example.com',
+            password='secret123',
+            role=Employee.Role.ADMIN,
+        )
+        self.client.login(username='admin', password='strongpass123')
 
         response = self.client.get('/dashboard/')
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Dashboard')
+
+    def test_admin_dashboard_shows_admin_panel_sidebar(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='paneladmin', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Panel Admin',
+            email='paneladmin@example.com',
+            password='secret123',
+            role=Employee.Role.ADMIN,
+        )
+        self.client.login(username='paneladmin', password='strongpass123')
+
+        response = self.client.get('/dashboard/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Admin Panel')
+        self.assertNotContains(response, 'Employee Panel')
 
 
 class AnalyticsDataTests(TestCase):
@@ -46,7 +103,7 @@ class AnalyticsDataTests(TestCase):
             name='Analyst Employee',
             email='analyst@example.com',
             password='secret123',
-            role=Employee.Role.EMPLOYEE,
+            role=Employee.Role.ADMIN,
         )
         Attendance.objects.create(employee=employee, date=date.today(), status=Attendance.Status.PRESENT)
         ClientVisit.objects.create(
@@ -87,3 +144,38 @@ class PasswordResetTests(TestCase):
         self.assertRedirects(response, reverse('password_reset_done'))
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Password reset', mail.outbox[0].subject)
+
+
+class RoleBasedAccessTests(TestCase):
+    def test_admin_user_can_access_employee_listing(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='adminuser', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Admin User',
+            email='admin@example.com',
+            password='secret123',
+            role=Employee.Role.ADMIN,
+        )
+
+        self.client.login(username='adminuser', password='strongpass123')
+        response = self.client.get(reverse('employee:list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Employees')
+
+    def test_employee_user_is_denied_access_to_admin_listing(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='employeeuser', password='strongpass123')
+        Employee.objects.create(
+            user=user,
+            name='Employee User',
+            email='employee@example.com',
+            password='secret123',
+            role=Employee.Role.EMPLOYEE,
+        )
+
+        self.client.login(username='employeeuser', password='strongpass123')
+        response = self.client.get(reverse('employee:list'))
+
+        self.assertEqual(response.status_code, 403)

@@ -7,6 +7,8 @@ from django.shortcuts import render
 from attendance.models import Attendance
 from dashboard.models import ActivityLog
 from employee.models import Employee
+from employee.permissions import get_scoped_queryset, is_admin_user
+from employee.utils import get_employee_for_user
 from visits.models import ClientVisit
 
 from .csv_utils import build_csv_response
@@ -28,8 +30,14 @@ def _get_report_context(request):
     employees = Employee.objects.order_by('name').only('id', 'name')
 
     # Build filtered querysets
-    attendance_queryset = Attendance.objects.select_related('employee')
-    visits_queryset = ClientVisit.objects.select_related('employee')
+    current_employee = get_employee_for_user(request.user)
+    attendance_queryset = get_scoped_queryset(request.user, Attendance.objects.select_related('employee'))
+    visits_queryset = get_scoped_queryset(request.user, ClientVisit.objects.select_related('employee'))
+
+    if not is_admin_user(request.user) and current_employee is not None:
+        employees = Employee.objects.filter(pk=current_employee.pk).only('id', 'name')
+    else:
+        employees = Employee.objects.order_by('name').only('id', 'name')
 
     employee_name = 'All'
     if employee_id:
@@ -90,6 +98,16 @@ def _get_report_context(request):
     }
 
 
+def _log_report_generation(user, report_type):
+    employee = getattr(user, 'employee', None)
+    ActivityLog.objects.create(
+        employee=employee,
+        activity_type=ActivityLog.ActivityType.REPORT_GENERATED,
+        title='Report Generated',
+        description=f'{report_type} report was generated.',
+    )
+
+
 @login_required(login_url='login')
 def report_dashboard(request):
     context = _get_report_context(request)
@@ -101,37 +119,19 @@ def report_dashboard(request):
 @login_required(login_url='login')
 def download_pdf(request):
     context = _get_report_context(request)
-    employee = request.user.employee if hasattr(request.user, 'employee') else None
-    ActivityLog.objects.create(
-        employee=employee,
-        activity_type=ActivityLog.ActivityType.REPORT_GENERATED,
-        title="Report Generated",
-        description="A PDF report was generated.",
-    )
+    _log_report_generation(request.user, 'PDF')
     return build_pdf_response(context)
 
 
 @login_required(login_url='login')
 def download_excel(request):
     context = _get_report_context(request)
-    employee = request.user.employee if hasattr(request.user, 'employee') else None
-    ActivityLog.objects.create(
-        employee=employee,
-        activity_type=ActivityLog.ActivityType.REPORT_GENERATED,
-        title="Report Generated",
-        description="An Excel report was generated.",
-    )
+    _log_report_generation(request.user, 'Excel')
     return build_excel_response(context)
 
 
 @login_required(login_url='login')
 def download_csv(request):
     context = _get_report_context(request)
-    employee = request.user.employee if hasattr(request.user, 'employee') else None
-    ActivityLog.objects.create(
-        employee=employee,
-        activity_type=ActivityLog.ActivityType.REPORT_GENERATED,
-        title="Report Generated",
-        description="A CSV report was generated.",
-    )
+    _log_report_generation(request.user, 'CSV')
     return build_csv_response(context)

@@ -44,9 +44,13 @@
                     <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Go</span></button>
                 </div>
                 <div class="col-12 d-flex flex-wrap gap-2">
-                    <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
-                    <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
-                    <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
+                    {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
+                        <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
+                        <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
+                        <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
+                    {% else %}
+                        <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
+                    {% endif %}
                 </div>
             </form>
         </div>

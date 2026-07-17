@@ -9,7 +9,8 @@ from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from dashboard.models import ActivityLog
-from employee.models import Employee
+from employee.permissions import get_scoped_queryset
+from employee.utils import get_employee_for_user
 
 from .forms import ClientVisitForm
 from .models import ClientVisit
@@ -17,20 +18,9 @@ from .serializers import ClientVisitSerializer
 from .utils import send_visit_completed_email, send_visit_created_email, send_visit_reminder_email
 
 
-def get_employee_for_user(user):
-    if hasattr(user, "employee"):
-        return user.employee
-
-    # Use single query with Q objects instead of two separate queries
-    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
-
-
 @login_required(login_url="login")
 def visit_list(request):
-    employee = get_employee_for_user(request.user)
-    queryset = ClientVisit.objects.none()
-    if employee is not None:
-        queryset = ClientVisit.objects.filter(employee=employee)
+    queryset = get_scoped_queryset(request.user, ClientVisit.objects.all())
 
     search_query = request.GET.get("q", "").strip()
     client_name_filter = request.GET.get("client_name", "").strip()
@@ -89,10 +79,24 @@ class ClientVisitListView(ListAPIView):
     queryset = ClientVisit.objects.select_related("employee").order_by("-visit_date", "-created_at")
     serializer_class = ClientVisitSerializer
 
+    def get_queryset(self):
+        return get_scoped_queryset(
+            self.request.user,
+            self.queryset,
+            employee_field="employee__user",
+        )
+
 
 class ClientVisitDetailView(RetrieveAPIView):
     queryset = ClientVisit.objects.select_related("employee").order_by("-visit_date", "-created_at")
     serializer_class = ClientVisitSerializer
+
+    def get_queryset(self):
+        return get_scoped_queryset(
+            self.request.user,
+            self.queryset,
+            employee_field="employee__user",
+        )
 
 
 @login_required(login_url="login")
@@ -186,10 +190,7 @@ def visit_detail(request, pk):
 
 @login_required(login_url="login")
 def visit_reports(request):
-    employee = get_employee_for_user(request.user)
-    queryset = ClientVisit.objects.none()
-    if employee is not None:
-        queryset = ClientVisit.objects.filter(employee=employee)
+    queryset = get_scoped_queryset(request.user, ClientVisit.objects.all())
 
     search_query = request.GET.get("q", "").strip()
     status_filter = request.GET.get("status", "").strip()
