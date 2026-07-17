@@ -37,8 +37,8 @@
                 <div class="card-body d-flex align-items-center p-4">
                     <div class="stat-icon me-3"><i class="bi bi-calendar2-check"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Today's Attendance</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.todays_attendance }}</h3>
+                        <h6 class="text-muted mb-1">Today's Visits</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.todays_client_visits }}</h3>
                     </div>
                 </div>
             </div>
@@ -47,10 +47,10 @@
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card warning-card h-100">
                 <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-building"></i></div>
+                    <div class="stat-icon me-3"><i class="bi bi-bar-chart-line"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Today's Client Visits</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.todays_client_visits }}</h3>
+                        <h6 class="text-muted mb-1">Monthly Visits</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.monthly_visits }}</h3>
                     </div>
                 </div>
             </div>
@@ -59,11 +59,79 @@
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card danger-card h-100">
                 <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-clock-history"></i></div>
+                    <div class="stat-icon me-3"><i class="bi bi-graph-up"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Pending Visits</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.pending_visits }}</h3>
+                        <h6 class="text-muted mb-1">Average Attendance</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.average_attendance }}%</h3>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card dashboard-card stat-card success-card h-100">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="stat-icon me-3"><i class="bi bi-check2-circle"></i></div>
+                    <div>
+                        <h6 class="text-muted mb-1">Completion Rate</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.completion_rate }}%</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card dashboard-card stat-card subtle-card h-100">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="stat-icon me-3"><i class="bi bi-person-check"></i></div>
+                    <div>
+                        <h6 class="text-muted mb-1">Employees Present Today</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.employees_present_today }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card dashboard-card h-100 p-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-semibold mb-0">Recent Activity</h5>
+                        <span class="badge rounded-pill bg-secondary-subtle text-secondary">Latest 10</span>
+                    </div>
+                    {% if recent_activities %}
+                        <div class="list-group list-group-flush">
+                            {% for activity in recent_activities %}
+                                <div class="list-group-item px-0 py-3 d-flex align-items-start gap-3">
+                                    <span class="badge {{ activity.badge_class }} rounded-pill p-2"><i class="bi {{ activity.icon_class }}"></i></span>
+                                    <div>
+                                        <div class="fw-semibold">{{ activity.title }}</div>
+                                        <div class="text-muted small">{{ activity.description }}</div>
+                                        <div class="text-muted small mt-1">{{ activity.created_at|date:"M d, Y H:i" }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No recent activity yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card dashboard-card h-100 p-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-semibold mb-0">Quick Notes</h5>
+                        <span class="badge rounded-pill bg-info-subtle text-info">Tips</span>
+                    </div>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li>Attendance badges make status clearer at a glance.</li>
+                        <li>Calendar highlights your monthly attendance pattern.</li>
+                        <li>Visit timelines keep client progress visible.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -75,7 +143,7 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title fw-semibold mb-0">Attendance Overview</h5>
-                        <span class="badge rounded-pill bg-primary-subtle text-primary">Live</span>
+                        <span class="badge rounded-pill bg-primary-subtle text-primary">Pie</span>
                     </div>
                     <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
                         <canvas id="attendanceChart" class="w-100"></canvas>
@@ -89,7 +157,7 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title fw-semibold mb-0">Monthly Client Visits</h5>
-                        <span class="badge rounded-pill bg-success-subtle text-success">Trend</span>
+                        <span class="badge rounded-pill bg-success-subtle text-success">Bar</span>
                     </div>
                     <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
                         <canvas id="monthlyVisitsChart" class="w-100"></canvas>
@@ -103,7 +171,7 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title fw-semibold mb-0">Visit Status</h5>
-                        <span class="badge rounded-pill bg-warning-subtle text-warning">Status</span>
+                        <span class="badge rounded-pill bg-warning-subtle text-warning">Doughnut</span>
                     </div>
                     <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
                         <canvas id="visitStatusChart" class="w-100"></canvas>
@@ -117,10 +185,38 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title fw-semibold mb-0">Employee-wise Visits</h5>
-                        <span class="badge rounded-pill bg-info-subtle text-info">Team</span>
+                        <span class="badge rounded-pill bg-info-subtle text-info">Horizontal Bar</span>
                     </div>
                     <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
                         <canvas id="employeeVisitsChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-semibold mb-0">Weekly Attendance Trend</h5>
+                        <span class="badge rounded-pill bg-secondary-subtle text-secondary">Line</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="weeklyAttendanceChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-semibold mb-0">Employee Performance</h5>
+                        <span class="badge rounded-pill bg-dark-subtle text-dark">Stacked Bar</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center flex-grow-1 chart-shell">
+                        <canvas id="employeePerformanceChart" class="w-100"></canvas>
                     </div>
                 </div>
             </div>
@@ -159,6 +255,14 @@
 
     .danger-card {
         background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%);
+    }
+
+    .success-card {
+        background: linear-gradient(135deg, #ecfdf3 0%, #ffffff 100%);
+    }
+
+    .subtle-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
     }
 
     .stat-icon {
@@ -299,6 +403,69 @@
                             y: {
                                 ticks: { autoSkip: false }
                             }
+                        }
+                    }
+                });
+
+                const weeklyAttendanceCtx = document.getElementById('weeklyAttendanceChart');
+                new Chart(weeklyAttendanceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.weekly_attendance.labels,
+                        datasets: [
+                            {
+                                label: 'Present',
+                                data: data.weekly_attendance.values,
+                                borderColor: '#198754',
+                                backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Absent',
+                                data: data.weekly_attendance.absent_values,
+                                borderColor: '#dc3545',
+                                backgroundColor: 'rgba(220, 53, 69, 0.15)',
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision: 0 } }
+                        }
+                    }
+                });
+
+                const employeePerformanceCtx = document.getElementById('employeePerformanceChart');
+                new Chart(employeePerformanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.employee_reports.map(item => item.name),
+                        datasets: [
+                            {
+                                label: 'Completed',
+                                data: data.employee_reports.map(item => item.completed_visits),
+                                backgroundColor: '#198754'
+                            },
+                            {
+                                label: 'Pending',
+                                data: data.employee_reports.map(item => item.pending_visits),
+                                backgroundColor: '#ffc107'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            x: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },
+                            y: { stacked: true }
                         }
                     }
                 });

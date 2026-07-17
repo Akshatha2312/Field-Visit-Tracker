@@ -28,6 +28,8 @@
                                 <option value="">All</option>
                                 <option value="Present" {% if status_filter == 'Present' %}selected{% endif %}>Present</option>
                                 <option value="Absent" {% if status_filter == 'Absent' %}selected{% endif %}>Absent</option>
+                                <option value="Checked In" {% if status_filter == 'Checked In' %}selected{% endif %}>Checked In</option>
+                                <option value="Checked Out" {% if status_filter == 'Checked Out' %}selected{% endif %}>Checked Out</option>
                                 <option value="Late" {% if status_filter == 'Late' %}selected{% endif %}>Late</option>
                             </select>
                         </div>
@@ -68,7 +70,19 @@
                             {% for attendance in attendances %}
                                 <tr>
                                     <td>{{ attendance.date }}</td>
-                                    <td>{{ attendance.status }}</td>
+                                    <td>
+                                        {% if attendance.status == 'Present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif attendance.status == 'Absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% elif attendance.status == 'Checked In' %}
+                                            <span class="badge bg-info text-dark">Checked In</span>
+                                        {% elif attendance.status == 'Checked Out' %}
+                                            <span class="badge bg-warning text-dark">Checked Out</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ attendance.status }}</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ attendance.check_in|default:'-' }}</td>
                                     <td>{{ attendance.check_out|default:'-' }}</td>
                                 </tr>

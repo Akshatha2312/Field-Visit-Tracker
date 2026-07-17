@@ -47,7 +47,8 @@ class AttendanceViewTests(TestCase):
         response = self.client.post(reverse("attendance:check_in"))
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Attendance.objects.filter(employee=self.employee).count(), 1)
+        attendance = Attendance.objects.get(employee=self.employee)
+        self.assertEqual(attendance.status, Attendance.Status.CHECKED_IN)
 
     def test_duplicate_check_in_is_blocked_same_day(self):
         self.client.force_login(self.user)
@@ -67,3 +68,4 @@ class AttendanceViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         attendance = Attendance.objects.get(employee=self.employee)
         self.assertIsNotNone(attendance.check_out)
+        self.assertEqual(attendance.status, Attendance.Status.CHECKED_OUT)

@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
+from dashboard.models import ActivityLog
 from employee.models import Employee
 
 from .forms import ClientVisitForm
@@ -104,6 +105,12 @@ def visit_create(request):
             visit = form.save(commit=False)
             visit.employee = employee
             visit.save()
+            ActivityLog.objects.create(
+                employee=employee,
+                activity_type=ActivityLog.ActivityType.VISIT_CREATED,
+                title="Visit Created",
+                description=f"{employee.name} created a visit for {visit.client_name}.",
+            )
             send_visit_created_email(employee, visit)
             messages.success(request, "Client visit added successfully.")
             return redirect("visits:list")
@@ -149,9 +156,28 @@ def mark_completed(request, pk):
     visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
     visit.status = ClientVisit.Status.COMPLETED
     visit.save(update_fields=["status"])
+    ActivityLog.objects.create(
+        employee=employee,
+        activity_type=ActivityLog.ActivityType.VISIT_COMPLETED,
+        title="Visit Completed",
+        description=f"{employee.name} completed the visit for {visit.client_name}.",
+    )
     send_visit_completed_email(employee, visit)
     messages.success(request, "Visit marked as completed.")
     return redirect("visits:list")
+
+
+@login_required(login_url="login")
+def visit_detail(request, pk):
+    employee = get_employee_for_user(request.user)
+    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    timeline_steps = [
+        {"label": "Visit Created", "status": "complete"},
+        {"label": "Accepted", "status": "active" if visit.status == ClientVisit.Status.PENDING else "complete"},
+        {"label": "In Progress", "status": "active" if visit.status == ClientVisit.Status.PENDING else "complete"},
+        {"label": "Completed", "status": "active" if visit.status == ClientVisit.Status.COMPLETED else "pending"},
+    ]
+    return render(request, "visits/detail.html", {"visit": visit, "timeline_steps": timeline_steps})
 
 
 @login_required(login_url="login")

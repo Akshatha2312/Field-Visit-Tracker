@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Visit Timeline | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-list-task me-2"></i>Visit Timeline</h1>
+            <p class="text-muted mb-0">Track the lifecycle of this client visit.</p>
+        </div>
+        <a href="{% url 'visits:list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card modern-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h4 class="fw-semibold mb-1">{{ visit.client_name }}</h4>
+                            <p class="text-muted mb-0">{{ visit.company_name }} • {{ visit.location }}</p>
+                        </div>
+                        <span class="badge {% if visit.status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">{{ visit.status }}</span>
+                    </div>
+
+                    <div class="timeline">
+                        {% for step in timeline_steps %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker {% if step.status == 'complete' %}complete{% elif step.status == 'active' %}active{% else %}pending{% endif %}"></div>
+                                <div class="timeline-content">
+                                    <div class="fw-semibold">{{ step.label }}</div>
+                                    {% if step.label == 'Visit Created' %}
+                                        <small class="text-muted">Created on {{ visit.created_at|date:"M d, Y H:i" }}</small>
+                                    {% elif step.label == 'Completed' %}
+                                        <small class="text-muted">Marked complete when the visit is finalized.</small>
+                                    {% else %}
+                                        <small class="text-muted">Progress continues through the visit lifecycle.</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card modern-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-semibold mb-3">Visit Details</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><strong>Purpose:</strong> {{ visit.purpose }}</li>
+                        <li class="mb-2"><strong>Contact:</strong> {{ visit.contact_number }}</li>
+                        <li class="mb-2"><strong>Visit Date:</strong> {{ visit.visit_date }}</li>
+                        <li class="mb-2"><strong>Notes:</strong> {{ visit.meeting_notes|default:'No notes added.' }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+    .timeline {
+        position: relative;
+        padding-left: 1.2rem;
+    }
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 0.45rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dbeafe;
+    }
+    .timeline-item {
+        position: relative;
+        padding-left: 1.2rem;
+        margin-bottom: 1.1rem;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -0.05rem;
+        top: 0.25rem;
+        width: 0.95rem;
+        height: 0.95rem;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #dbeafe;
+    }
+    .timeline-marker.complete { background: #198754; }
+    .timeline-marker.active { background: #0d6efd; }
+    .timeline-marker.pending { background: #adb5bd; }
+    .timeline-content {
+        background: #f8fbff;
+        border-radius: 0.8rem;
+        padding: 0.8rem 1rem;
+    }
+</style>
+{% endblock %}

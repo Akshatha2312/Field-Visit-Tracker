@@ -1,7 +1,13 @@
+from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
+
+from attendance.models import Attendance
+from employee.models import Employee
+from visits.models import ClientVisit
 
 
 class HomePageTests(TestCase):
@@ -29,6 +35,40 @@ class LoginFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Dashboard')
+
+
+class AnalyticsDataTests(TestCase):
+    def test_analytics_endpoint_returns_summary_and_employee_reports(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='analyst', password='strongpass123')
+        employee = Employee.objects.create(
+            user=user,
+            name='Analyst Employee',
+            email='analyst@example.com',
+            password='secret123',
+            role=Employee.Role.EMPLOYEE,
+        )
+        Attendance.objects.create(employee=employee, date=date.today(), status=Attendance.Status.PRESENT)
+        ClientVisit.objects.create(
+            employee=employee,
+            client_name='Ada',
+            company_name='Acme',
+            contact_number='1234567890',
+            location='Lagos',
+            visit_date=date.today(),
+            purpose='Review',
+            status=ClientVisit.Status.COMPLETED,
+        )
+        self.client.login(username='analyst', password='strongpass123')
+
+        response = self.client.get(reverse('analytics_data'))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertIn('summary', payload)
+        self.assertIn('employee_reports', payload)
+        self.assertEqual(payload['summary']['today_visits'], 1)
+        self.assertEqual(payload['employee_reports'][0]['total_visits'], 1)
 
 
 class PasswordResetTests(TestCase):

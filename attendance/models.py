@@ -7,13 +7,15 @@ class Attendance(models.Model):
     class Status(models.TextChoices):
         PRESENT = "Present", "Present"
         ABSENT = "Absent", "Absent"
+        CHECKED_IN = "Checked In", "Checked In"
+        CHECKED_OUT = "Checked Out", "Checked Out"
         LATE = "Late", "Late"
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="attendances")
     check_in = models.DateTimeField(blank=True, null=True)
     check_out = models.DateTimeField(blank=True, null=True)
     date = models.DateField()
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PRESENT)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.CHECKED_IN)
 
     class Meta:
         ordering = ["-date", "-check_in"]

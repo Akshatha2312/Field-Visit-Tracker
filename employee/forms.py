@@ -7,12 +7,13 @@ from .models import Employee
 class EmployeeProfileForm(forms.ModelForm):
     username = forms.CharField(required=False, disabled=True, label="Username")
     role = forms.CharField(required=False, disabled=True, label="Role")
-    phone_number = forms.CharField(
+    phone_number = forms.IntegerField(
         required=False,
         label="Phone Number",
-        max_length=15,
-        validators=[RegexValidator(r"^\d{10,15}$", "Enter a valid phone number with 10 to 15 digits.")],
-        widget=forms.TextInput(attrs={"class": "form-control"}),
+        min_value=1000000000,
+        max_value=999999999999999,
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        error_messages={"invalid": "Enter a valid phone number with 10 to 15 digits."},
     )
 
     class Meta:

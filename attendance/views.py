@@ -1,3 +1,6 @@
+import calendar
+from datetime import date
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -5,6 +8,7 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
+from dashboard.models import ActivityLog
 from employee.models import Employee
 
 from .models import Attendance
@@ -19,6 +23,44 @@ def get_employee_for_user(user):
     return Employee.objects.filter(email=user.email).first() or Employee.objects.filter(name=user.username).first()
 
 
+def _build_attendance_calendar(employee, year, month):
+    if employee is None:
+        return []
+
+    first_day = date(year, month, 1)
+    last_day = calendar.monthrange(year, month)[1]
+    attendance_map = {
+        item.date: item
+        for item in Attendance.objects.filter(employee=employee, date__year=year, date__month=month)
+    }
+
+    weeks = []
+    week = []
+    for _ in range(first_day.weekday()):
+        week.append(None)
+
+    for day in range(1, last_day + 1):
+        current_date = date(year, month, day)
+        attendance = attendance_map.get(current_date)
+        week.append(
+            {
+                "date": current_date,
+                "status": attendance.status if attendance else "Absent",
+                "is_today": current_date == timezone.localdate(),
+            }
+        )
+        if len(week) == 7:
+            weeks.append(week)
+            week = []
+
+    if week:
+        while len(week) < 7:
+            week.append(None)
+        weeks.append(week)
+
+    return weeks
+
+
 @login_required(login_url="login")
 def attendance_dashboard(request):
     employee = get_employee_for_user(request.user)
@@ -28,10 +70,12 @@ def attendance_dashboard(request):
     if employee is not None:
         today_attendance = Attendance.objects.filter(employee=employee, date=today).first()
 
+    calendar_weeks = _build_attendance_calendar(employee, today.year, today.month)
     context = {
         "employee": employee,
         "today_attendance": today_attendance,
         "today": today,
+        "calendar_weeks": calendar_weeks,
     }
     return render(request, "attendance/dashboard.html", context)
 
@@ -53,7 +97,13 @@ def check_in(request):
             employee=employee,
             date=today,
             check_in=timezone.now(),
-            status=Attendance.Status.PRESENT,
+            status=Attendance.Status.CHECKED_IN,
+        )
+        ActivityLog.objects.create(
+            employee=employee,
+            activity_type=ActivityLog.ActivityType.CHECK_IN,
+            title="Check In",
+            description=f"{employee.name} checked in for {today}.",
         )
         send_checkin_email(employee, attendance)
         messages.success(request, "Check-in recorded successfully.")
@@ -81,7 +131,14 @@ def check_out(request):
             return redirect("attendance:dashboard")
 
         attendance.check_out = timezone.now()
-        attendance.save(update_fields=["check_out"])
+        attendance.status = Attendance.Status.CHECKED_OUT
+        attendance.save(update_fields=["check_out", "status"])
+        ActivityLog.objects.create(
+            employee=employee,
+            activity_type=ActivityLog.ActivityType.CHECK_OUT,
+            title="Check Out",
+            description=f"{employee.name} checked out for {today}.",
+        )
         send_checkout_email(employee, attendance)
         messages.success(request, "Check-out recorded successfully.")
         return redirect("attendance:history")

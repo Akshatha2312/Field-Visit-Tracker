@@ -47,6 +47,7 @@
                     <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
                     <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
                     <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
+                    <a href="{% url 'reports:send_reminders' %}" class="btn btn-outline-primary"><i class="bi bi-envelope me-2"></i>Send Reminders</a>
                 </div>
             </form>
         </div>

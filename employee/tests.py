@@ -14,9 +14,11 @@ class EmployeeModelTests(TestCase):
             email="john@example.com",
             password="secret123",
             role=Employee.Role.ADMIN,
+            phone_number=9876543210,
         )
 
         self.assertEqual(str(employee), "John Doe")
+        self.assertEqual(employee.phone_number, 9876543210)
 
 
 class ProfileViewTests(TestCase):
@@ -46,7 +48,7 @@ class ProfileViewTests(TestCase):
         employee.refresh_from_db()
         self.assertEqual(employee.name, "New Name")
         self.assertEqual(employee.email, "new@example.com")
-        self.assertEqual(employee.phone_number, "9876543210")
+        self.assertEqual(employee.phone_number, 9876543210)
         self.assertContains(response, "updated successfully")
 
     def test_profile_rejects_invalid_email(self):

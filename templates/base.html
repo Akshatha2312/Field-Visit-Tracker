@@ -195,7 +195,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-            <img src="{% static 'images/logo.png.png' %}" alt="Field Visit Tracker logo" class="me-2">
+            <img src="{% static 'images/logo.png' %}" alt="Field Visit Tracker logo" class="me-2">
             <span>Field Visit Tracker</span>
         </a>
         <div class="d-flex align-items-center gap-3">
@@ -290,6 +290,10 @@
         }
 
         document.querySelectorAll('.btn-loading').forEach(function (button) {
+            if (button.matches('button[type="submit"]')) {
+                return;
+            }
+
             button.addEventListener('click', function (event) {
                 if (button.getAttribute('href') && button.getAttribute('href').startsWith('#')) {
                     return;
@@ -304,7 +308,7 @@
 
         document.querySelectorAll('form.form-loading').forEach(function (form) {
             form.addEventListener('submit', function () {
-                const submitButton = form.querySelector('button[type="submit"]');
+                const submitButton = form.querySelector('button[type="submit"].btn-loading');
                 if (submitButton) {
                     setLoadingState(submitButton, true);
                 }
@@ -316,16 +320,21 @@
                 event.preventDefault();
                 const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
                 const confirmButton = document.getElementById('confirmDeleteBtn');
-                confirmButton.href = link.dataset.deleteUrl;
+                if (confirmButton) {
+                    confirmButton.href = link.dataset.deleteUrl;
+                }
                 modal.show();
             });
         });
 
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function (event) {
-            if (!this.href || this.href === '#') {
-                event.preventDefault();
-            }
-        });
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function (event) {
+                if (!this.href || this.href === '#') {
+                    event.preventDefault();
+                }
+            });
+        }
     });
 </script>
 

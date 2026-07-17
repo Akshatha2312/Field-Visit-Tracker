@@ -78,6 +78,7 @@
                                     <td>{{ visit.location }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'visits:detail' visit.pk %}" class="btn btn-outline-secondary"><i class="bi bi-list-task me-1"></i>Timeline</a>
                                             <a href="{% url 'visits:edit' visit.pk %}" class="btn btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Edit</a>
                                             {% if visit.status != 'Completed' %}
                                                 <a href="{% url 'visits:complete' visit.pk %}" class="btn btn-outline-success btn-loading"><i class="bi bi-check2-circle me-1"></i>Complete</a>
