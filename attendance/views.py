@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -20,7 +21,8 @@ def get_employee_for_user(user):
     if hasattr(user, "employee"):
         return user.employee
 
-    return Employee.objects.filter(email=user.email).first() or Employee.objects.filter(name=user.username).first()
+    # Use single query with Q objects instead of two separate queries
+    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
 
 
 def _build_attendance_calendar(employee, year, month):
@@ -29,9 +31,12 @@ def _build_attendance_calendar(employee, year, month):
 
     first_day = date(year, month, 1)
     last_day = calendar.monthrange(year, month)[1]
+    # Optimize by only fetching needed fields
     attendance_map = {
         item.date: item
-        for item in Attendance.objects.filter(employee=employee, date__year=year, date__month=month)
+        for item in Attendance.objects.filter(
+            employee=employee, date__year=year, date__month=month
+        ).only('date', 'status')
     }
 
     weeks = []

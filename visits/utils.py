@@ -45,3 +45,27 @@ def send_visit_completed_email(employee, visit):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
     except Exception as e:
         print("EMAIL ERROR:", e)
+
+
+def send_visit_reminder_email(employee, visit):
+    if not employee or not visit or not employee.email:
+        return
+
+    subject = "Reminder: Upcoming Client Visit"
+    message = (
+        f"Hello {employee.name},\n\n"
+        f"This is a reminder for your upcoming client visit.\n\n"
+        f"Employee Name: {employee.name}\n"
+        f"Client Name: {visit.client_name}\n"
+        f"Company: {visit.company_name}\n"
+        f"Visit Date: {visit.visit_date}\n"
+        f"Location: {visit.location}\n"
+        f"Purpose: {visit.purpose}\n\n"
+        "Regards,\n"
+        "Field Visit Tracker"
+    )
+
+    try:
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
+    except Exception:
+        pass

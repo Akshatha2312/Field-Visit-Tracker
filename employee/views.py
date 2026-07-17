@@ -13,7 +13,8 @@ def get_employee_for_user(user):
     if hasattr(user, "employee"):
         return user.employee
 
-    return Employee.objects.filter(email=user.email).first() or Employee.objects.filter(name=user.username).first()
+    # Use single query with Q objects instead of two separate queries
+    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
 
 
 @login_required(login_url="login")

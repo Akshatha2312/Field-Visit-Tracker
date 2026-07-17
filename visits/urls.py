@@ -1,6 +1,17 @@
 from django.urls import path
 
-from .views import mark_completed, visit_create, visit_delete, visit_detail, visit_edit, visit_list, visit_reports
+from .views import (
+    ClientVisitDetailView,
+    ClientVisitListView,
+    mark_completed,
+    send_visit_reminder,
+    visit_create,
+    visit_delete,
+    visit_detail,
+    visit_edit,
+    visit_list,
+    visit_reports,
+)
 
 urlpatterns = [
     path('', visit_list, name='list'),
@@ -10,4 +21,5 @@ urlpatterns = [
     path('<int:pk>/edit/', visit_edit, name='edit'),
     path('<int:pk>/delete/', visit_delete, name='delete'),
     path('<int:pk>/complete/', mark_completed, name='complete'),
+    path('<int:pk>/send-reminder/', send_visit_reminder, name='send_reminder'),
 ]

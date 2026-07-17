@@ -289,6 +289,23 @@
             }
         }
 
+        // Re-enable all buttons when page loads (in case it was reloaded with btn in loading state)
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.btn-loading.disabled').forEach(function (button) {
+                setLoadingState(button, false);
+            });
+        });
+
+        // Re-enable buttons on page show (e.g., browser back button)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                document.querySelectorAll('.btn-loading.disabled').forEach(function (button) {
+                    setLoadingState(button, false);
+                });
+            }
+        });
+
+        // Handle anchor/link buttons
         document.querySelectorAll('.btn-loading').forEach(function (button) {
             if (button.matches('button[type="submit"]')) {
                 return;
@@ -302,19 +319,23 @@
                     event.preventDefault();
                     return;
                 }
+                // Show loading state immediately
                 setLoadingState(button, true);
             });
         });
 
-        document.querySelectorAll('form.form-loading').forEach(function (form) {
+        // Handle form submissions
+        document.querySelectorAll('form').forEach(function (form) {
             form.addEventListener('submit', function () {
-                const submitButton = form.querySelector('button[type="submit"].btn-loading');
-                if (submitButton) {
-                    setLoadingState(submitButton, true);
-                }
+                const submitButtons = form.querySelectorAll('button[type="submit"].btn-loading');
+                submitButtons.forEach(function(btn) {
+                    // Show loading state immediately
+                    setLoadingState(btn, true);
+                });
             });
         });
 
+        // Handle delete confirmations
         document.querySelectorAll('.confirm-delete').forEach(function (link) {
             link.addEventListener('click', function (event) {
                 event.preventDefault();
@@ -327,11 +348,17 @@
             });
         });
 
+        // Handle delete confirmation submit
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         if (confirmDeleteBtn) {
             confirmDeleteBtn.addEventListener('click', function (event) {
                 if (!this.href || this.href === '#') {
                     event.preventDefault();
+                } else {
+                    // Show loading state on delete confirmation
+                    if (this.classList.contains('btn-loading')) {
+                        setLoadingState(this, true);
+                    }
                 }
             });
         }

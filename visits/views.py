@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -14,14 +14,15 @@ from employee.models import Employee
 from .forms import ClientVisitForm
 from .models import ClientVisit
 from .serializers import ClientVisitSerializer
-from .utils import send_visit_completed_email, send_visit_created_email
+from .utils import send_visit_completed_email, send_visit_created_email, send_visit_reminder_email
 
 
 def get_employee_for_user(user):
     if hasattr(user, "employee"):
         return user.employee
 
-    return Employee.objects.filter(email=user.email).first() or Employee.objects.filter(name=user.username).first()
+    # Use single query with Q objects instead of two separate queries
+    return Employee.objects.filter(Q(email=user.email) | Q(name=user.username)).first()
 
 
 @login_required(login_url="login")
@@ -65,6 +66,7 @@ def visit_list(request):
     paginator = Paginator(visits_list, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    today = timezone.localdate()
 
     return render(
         request,
@@ -78,6 +80,7 @@ def visit_list(request):
             "location_filter": location_filter,
             "employee_filter": employee_filter,
             "status_filter": status_filter,
+            "today": today,
         },
     )
 
@@ -171,13 +174,14 @@ def mark_completed(request, pk):
 def visit_detail(request, pk):
     employee = get_employee_for_user(request.user)
     visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    today = timezone.localdate()
     timeline_steps = [
         {"label": "Visit Created", "status": "complete"},
         {"label": "Accepted", "status": "active" if visit.status == ClientVisit.Status.PENDING else "complete"},
         {"label": "In Progress", "status": "active" if visit.status == ClientVisit.Status.PENDING else "complete"},
         {"label": "Completed", "status": "active" if visit.status == ClientVisit.Status.COMPLETED else "pending"},
     ]
-    return render(request, "visits/detail.html", {"visit": visit, "timeline_steps": timeline_steps})
+    return render(request, "visits/detail.html", {"visit": visit, "timeline_steps": timeline_steps, "today": today})
 
 
 @login_required(login_url="login")
@@ -202,11 +206,19 @@ def visit_reports(request):
     today = timezone.localdate()
     month_start = today.replace(day=1)
 
+    # Use aggregate to get all counts in a single query instead of multiple .count() calls
+    summary_aggs = queryset.aggregate(
+        total_visits=Count('id'),
+        pending_visits=Count('id', filter=Q(status=ClientVisit.Status.PENDING)),
+        completed_visits=Count('id', filter=Q(status=ClientVisit.Status.COMPLETED)),
+        visits_this_month=Count('id', filter=Q(visit_date__gte=month_start, visit_date__lte=today)),
+    )
+    
     summary = {
-        "total_visits": queryset.count(),
-        "pending_visits": queryset.filter(status=ClientVisit.Status.PENDING).count(),
-        "completed_visits": queryset.filter(status=ClientVisit.Status.COMPLETED).count(),
-        "visits_this_month": queryset.filter(visit_date__gte=month_start, visit_date__lte=today).count(),
+        "total_visits": summary_aggs['total_visits'],
+        "pending_visits": summary_aggs['pending_visits'],
+        "completed_visits": summary_aggs['completed_visits'],
+        "visits_this_month": summary_aggs['visits_this_month'],
     }
 
     return render(
@@ -220,3 +232,26 @@ def visit_reports(request):
             "date_filter": date_filter,
         },
     )
+
+
+@login_required(login_url="login")
+def send_visit_reminder(request, pk):
+    employee = get_employee_for_user(request.user)
+    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+
+    today = timezone.localdate()
+    tomorrow = today + timedelta(days=1)
+
+    # Check if visit is eligible for reminder
+    is_upcoming = visit.visit_date >= today
+    is_tomorrow = visit.visit_date == tomorrow
+    is_pending = visit.status == ClientVisit.Status.PENDING
+
+    if not (is_upcoming and is_pending):
+        messages.error(request, "Reminders can only be sent for upcoming and pending visits.")
+        return redirect("visits:detail", pk=pk)
+
+    # Send reminder email
+    send_visit_reminder_email(employee, visit)
+    messages.success(request, "Reminder email sent successfully.")
+    return redirect("visits:detail", pk=pk)

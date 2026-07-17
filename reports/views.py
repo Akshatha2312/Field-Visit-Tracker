@@ -1,11 +1,8 @@
-from datetime import datetime, timedelta
-
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.db.models import Count, Q
 from django.shortcuts import render
-from django.utils import timezone
 
 from attendance.models import Attendance
 from dashboard.models import ActivityLog
@@ -18,8 +15,6 @@ from .pdf_utils import build_pdf_response
 
 
 def _get_report_context(request):
-    employees = Employee.objects.order_by('name').only('id', 'name')
-
     from_date = request.GET.get('from_date', '').strip()
     to_date = request.GET.get('to_date', '').strip()
     employee_id = request.GET.get('employee', '').strip()
@@ -29,6 +24,10 @@ def _get_report_context(request):
     if from_date and to_date and from_date > to_date:
         invalid_filters = True
 
+    # Use only() to fetch only necessary fields for employees list
+    employees = Employee.objects.order_by('name').only('id', 'name')
+
+    # Build filtered querysets
     attendance_queryset = Attendance.objects.select_related('employee')
     visits_queryset = ClientVisit.objects.select_related('employee')
 
@@ -51,9 +50,11 @@ def _get_report_context(request):
     if visit_status:
         visits_queryset = visits_queryset.filter(status=visit_status)
 
+    # Order the querysets
     attendance_records = attendance_queryset.order_by('-date', '-check_in')
     visits = visits_queryset.order_by('-visit_date', '-created_at')
 
+    # Get all aggregates in single calls
     attendance_aggregates = attendance_queryset.aggregate(
         total=Count('id'),
         total_present=Count('id', filter=Q(status=Attendance.Status.PRESENT)),
@@ -95,35 +96,6 @@ def report_dashboard(request):
     if context.get('invalid_filters'):
         messages.error(request, 'The selected date range is invalid. Please choose an end date that is on or after the start date.')
     return render(request, 'reports/dashboard.html', context)
-
-
-@login_required(login_url='login')
-def send_visit_reminders(request):
-    today = timezone.localdate()
-    reminder_date = today + timedelta(days=1)
-    visits = ClientVisit.objects.select_related('employee').filter(visit_date=reminder_date)
-
-    sent_count = 0
-    for visit in visits:
-        employee = visit.employee
-        if not employee or not employee.email:
-            continue
-        send_mail(
-            subject='Client visit tomorrow',
-            message=(
-                f"Client: {visit.client_name}\n"
-                f"Location: {visit.location}\n"
-                f"Time: {visit.visit_date}\n"
-                f"Employee: {employee.name}\n"
-            ),
-            from_email=None,
-            recipient_list=[employee.email],
-            fail_silently=True,
-        )
-        sent_count += 1
-
-    messages.success(request, f'Reminder emails sent for {sent_count} upcoming visit(s).')
-    return redirect('reports:dashboard')
 
 
 @login_required(login_url='login')
