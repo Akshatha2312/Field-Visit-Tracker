@@ -31,6 +31,118 @@ class EmployeeModelTests(TestCase):
         self.assertFalse(employee.is_admin)
 
 
+class EmployeeManagementViewTests(TestCase):
+    def _create_admin_user(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="admin_emp", password="strongpass123")
+        Employee.objects.create(
+            user=user,
+            name="Admin Employee",
+            email="admin-emp@example.com",
+            password="secret123",
+            role=Employee.Role.ADMIN,
+        )
+        return user
+
+    def _create_employee_user(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="regular_emp", password="strongpass123")
+        Employee.objects.create(
+            user=user,
+            name="Regular Employee",
+            email="regular-emp@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+        return user
+
+    def test_admin_can_create_employee(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+
+        response = self.client.post(
+            reverse("employee:create"),
+            {
+                "username": "newemployee",
+                "name": "New Employee",
+                "email": "newemployee@example.com",
+                "phone_number": "9876543210",
+                "role": Employee.Role.EMPLOYEE,
+                "password": "newpass123",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Employee.objects.filter(email="newemployee@example.com").exists())
+        self.assertTrue(get_user_model().objects.filter(username="newemployee").exists())
+
+    def test_admin_can_edit_employee(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+        employee = Employee.objects.create(
+            name="Old Name",
+            email="old@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+
+        response = self.client.post(
+            reverse("employee:edit", args=[employee.pk]),
+            {
+                "username": "updatedemployee",
+                "name": "Updated Name",
+                "email": "updated@example.com",
+                "phone_number": "1234567890",
+                "role": Employee.Role.ADMIN,
+                "password": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        employee.refresh_from_db()
+        self.assertEqual(employee.name, "Updated Name")
+        self.assertEqual(employee.email, "updated@example.com")
+        self.assertEqual(employee.role, Employee.Role.ADMIN)
+
+    def test_admin_can_delete_employee(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+        employee = Employee.objects.create(
+            name="Delete Me",
+            email="delete-me@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+
+        response = self.client.post(reverse("employee:delete", args=[employee.pk]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Employee.objects.filter(pk=employee.pk).exists())
+
+    def test_admin_can_view_employee_details(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+        employee = Employee.objects.create(
+            name="Detail View",
+            email="detail-view@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+
+        response = self.client.get(reverse("employee:detail", args=[employee.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Detail View")
+
+    def test_employee_user_is_denied_employee_management(self):
+        self._create_employee_user()
+        self.client.login(username="regular_emp", password="strongpass123")
+
+        response = self.client.get(reverse("employee:list"))
+
+        self.assertEqual(response.status_code, 403)
+
+
 class ProfileViewTests(TestCase):
     def test_profile_update_saves_name_email_and_phone_and_shows_success_message(self):
         User = get_user_model()

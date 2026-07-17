@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Management | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-calendar2-week me-2"></i>Attendance Management</h1>
+            <p class="text-muted mb-0">Overview of attendance across all employees.</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
+    </div>
+
+    <div class="card modern-card">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="q" class="form-label"><i class="bi bi-search me-2"></i>Search Employee</label>
+                    <input type="text" class="form-control" id="q" name="q" value="{{ search_query }}" placeholder="Search by employee name">
+                </div>
+                <div class="col-md-4">
+                    <label for="date" class="form-label"><i class="bi bi-calendar me-2"></i>Date</label>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ date_filter }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label"><i class="bi bi-funnel me-2"></i>Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="Present" {% if status_filter == 'Present' %}selected{% endif %}>Present</option>
+                        <option value="Absent" {% if status_filter == 'Absent' %}selected{% endif %}>Absent</option>
+                        <option value="Checked In" {% if status_filter == 'Checked In' %}selected{% endif %}>Checked In</option>
+                        <option value="Checked Out" {% if status_filter == 'Checked Out' %}selected{% endif %}>Checked Out</option>
+                        <option value="Late" {% if status_filter == 'Late' %}selected{% endif %}>Late</option>
+                    </select>
+                </div>
+                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Search</span></button>
+                </div>
+            </form>
+
+            <div class="table-responsive mt-4">
+                {% if attendances %}
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in attendances %}
+                                <tr>
+                                    <td>{{ attendance.employee.name }}</td>
+                                    <td>{{ attendance.date }}</td>
+                                    <td>{{ attendance.status }}</td>
+                                    <td>{{ attendance.check_in|default:'-' }}</td>
+                                    <td>{{ attendance.check_out|default:'-' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="bi bi-calendar2-week"></i></div>
+                        <h5 class="fw-semibold mb-2">No Attendance Records Found</h5>
+                        <p class="text-muted mb-0">Try adjusting the filters or search term.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+</style>
+{% endblock %}

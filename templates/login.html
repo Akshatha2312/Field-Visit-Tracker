@@ -5,16 +5,16 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+        <div class="col-12 col-md-8 col-lg-5">
             <div class="card modern-card border-0">
                 <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-4">
-                        <div class="auth-icon mb-3">🔐</div>
-                        <h2 class="fw-bold text-primary mb-2">Employee Login</h2>
+                        <div class="auth-icon mb-3"><i class="bi bi-shield-lock-fill"></i></div>
+                        <h2 class="fw-bold mb-2" style="color: #2F3E46;">Employee Login</h2>
                         <p class="text-muted mb-0">Access your Field Visit Tracker account</p>
                     </div>
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate id="loginForm">
                         {% csrf_token %}
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger" role="alert">
@@ -23,15 +23,38 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
+
                         <div class="mb-3">
                             <label for="id_username" class="form-label fw-semibold">Username</label>
-                            <input type="text" class="form-control form-control-lg" name="username" id="id_username" required>
+                            <div class="input-group input-group-lg has-icon">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" name="username" id="id_username" required autocomplete="username">
+                            </div>
                         </div>
+
                         <div class="mb-3">
                             <label for="id_password" class="form-label fw-semibold">Password</label>
-                            <input type="password" class="form-control form-control-lg" name="password" id="id_password" required>
+                            <div class="input-group input-group-lg has-icon">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" name="password" id="id_password" required autocomplete="current-password">
+                                <button type="button" class="btn btn-outline-secondary toggle-password" data-target="id_password" aria-label="Show password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div id="capsWarning" class="caps-warning mt-2" role="status" aria-live="polite">
+                                <i class="bi bi-exclamation-triangle me-1"></i>Caps Lock is on
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                            <label class="form-check-label text-muted" for="rememberMe">Remember me</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 btn-loading" id="loginButton">
+                            <span class="btn-text">Login</span>
+                        </button>
+
                         <div class="text-center mt-3">
                             <a href="{% url 'password_reset' %}" class="text-decoration-none fw-semibold">Forgot Password?</a>
                         </div>
@@ -44,18 +67,118 @@
 
 <style>
     .modern-card {
-        border-radius: 1.2rem;
-        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        border-radius: 1.3rem;
+        box-shadow: 0 20px 45px rgba(47, 62, 70, 0.12);
+        border: 1px solid rgba(82, 121, 111, 0.12);
     }
+
     .auth-icon {
-        width: 3.2rem;
-        height: 3.2rem;
+        width: 3.4rem;
+        height: 3.4rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
-        font-size: 1.35rem;
+        background: linear-gradient(135deg, #eef4ef 0%, #f8fbf7 100%);
+        font-size: 1.4rem;
+        color: #52796F;
+        box-shadow: inset 0 0 0 1px rgba(82, 121, 111, 0.12);
+    }
+
+    .has-icon .input-group-text {
+        background: #fff;
+        border-right: 0;
+        color: #52796F;
+    }
+
+    .has-icon .form-control {
+        border-left: 0;
+        padding-left: 0.2rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .has-icon .form-control:focus {
+        box-shadow: none;
+    }
+
+    .has-icon:focus-within .input-group-text,
+    .has-icon:focus-within .form-control {
+        border-color: #52796F;
+        box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.16);
+    }
+
+    .toggle-password {
+        border-left: 0;
+        border-color: #dfe8de;
+        color: #5c6f72;
+    }
+
+    .toggle-password:hover {
+        color: #354F52;
+        background: #f5f8f5;
+    }
+
+    .btn-loading .spinner-border {
+        display: inline-block;
+    }
+
+    .btn-loading .btn-text {
+        display: inline-block;
+    }
+
+    .caps-warning {
+        display: none;
+        color: #b45309;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .form-check-input:checked {
+        background-color: #52796F;
+        border-color: #52796F;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('id_password');
+        const capsWarning = document.getElementById('capsWarning');
+        const form = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+
+        if (passwordInput) {
+            passwordInput.addEventListener('keyup', function (event) {
+                const isCapsLockOn = event.getModifierState && event.getModifierState('CapsLock');
+                capsWarning.style.display = isCapsLockOn ? 'block' : 'none';
+            });
+        }
+
+        document.querySelectorAll('.toggle-password').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                if (!targetInput) return;
+
+                const isPassword = targetInput.type === 'password';
+                targetInput.type = isPassword ? 'text' : 'password';
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+                }
+                this.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            });
+        });
+
+        if (form && loginButton) {
+            form.addEventListener('submit', function () {
+                if (!loginButton.dataset.originalHtml) {
+                    loginButton.dataset.originalHtml = loginButton.innerHTML;
+                }
+                loginButton.disabled = true;
+                loginButton.classList.add('disabled', 'loading');
+                loginButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span class="btn-text">Signing In...</span>';
+            });
+        }
+    });
+</script>
 {% endblock %}

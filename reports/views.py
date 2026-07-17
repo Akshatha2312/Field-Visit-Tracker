@@ -26,16 +26,19 @@ def _get_report_context(request):
     if from_date and to_date and from_date > to_date:
         invalid_filters = True
 
+    current_employee = get_employee_for_user(request.user)
+    is_admin = is_admin_user(request.user)
+
     # Use only() to fetch only necessary fields for employees list
     employees = Employee.objects.order_by('name').only('id', 'name')
 
     # Build filtered querysets
-    current_employee = get_employee_for_user(request.user)
     attendance_queryset = get_scoped_queryset(request.user, Attendance.objects.select_related('employee'))
     visits_queryset = get_scoped_queryset(request.user, ClientVisit.objects.select_related('employee'))
 
-    if not is_admin_user(request.user) and current_employee is not None:
+    if not is_admin and current_employee is not None:
         employees = Employee.objects.filter(pk=current_employee.pk).only('id', 'name')
+        employee_id = str(current_employee.pk)
     else:
         employees = Employee.objects.order_by('name').only('id', 'name')
 
@@ -95,6 +98,7 @@ def _get_report_context(request):
         'pending_visits': visit_aggregates.get('pending', 0),
         'completed_visits': visit_aggregates.get('completed', 0),
         'invalid_filters': invalid_filters,
+        'is_admin': is_admin,
     }
 
 

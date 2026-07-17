@@ -1,9 +1,10 @@
 from django.urls import path
 
-from .views import attendance_dashboard, attendance_history, check_in, check_out
+from .views import attendance_dashboard, attendance_history, attendance_management, check_in, check_out
 
 urlpatterns = [
     path('', attendance_dashboard, name='dashboard'),
+    path('management/', attendance_management, name='management'),
     path('check-in/', check_in, name='check_in'),
     path('check-out/', check_out, name='check_out'),
     path('history/', attendance_history, name='history'),

@@ -17,23 +17,23 @@
 
     <form method="get" class="card modern-card p-3 mb-4">
         <div class="row g-3 align-items-end">
-            <div class="col-md-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-person me-2"></i>Client Name</label>
                 <input type="text" name="client_name" class="form-control" value="{{ client_name_filter }}" placeholder="Client name">
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-building me-2"></i>Company</label>
                 <input type="text" name="company" class="form-control" value="{{ company_filter }}" placeholder="Company">
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-geo-alt me-2"></i>Location</label>
                 <input type="text" name="location" class="form-control" value="{{ location_filter }}" placeholder="Location">
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-person-badge me-2"></i>Employee</label>
                 <input type="text" name="employee" class="form-control" value="{{ employee_filter }}" placeholder="Employee">
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-funnel me-2"></i>Status</label>
                 <select name="status" class="form-select">
                     <option value="">All</option>
@@ -41,7 +41,7 @@
                     <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
                 </select>
             </div>
-            <div class="col-md-2 d-grid">
+            <div class="col-12 col-md-6 col-lg-2 d-grid">
                 <button type="submit" class="btn btn-outline-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Search</span></button>
             </div>
         </div>
@@ -51,7 +51,7 @@
         <div class="card-body p-4">
             {% if visits %}
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle visits-table">
                         <thead>
                             <tr>
                                 <th>Client</th>
@@ -65,19 +65,21 @@
                         <tbody>
                             {% for visit in visits %}
                                 <tr>
-                                    <td>{{ visit.client_name }}</td>
+                                    <td>
+                                        <div class="fw-semibold">{{ visit.client_name }}</div>
+                                    </td>
                                     <td>{{ visit.company_name }}</td>
                                     <td>{{ visit.visit_date }}</td>
                                     <td>
                                         {% if visit.status == 'Completed' %}
-                                            <span class="badge bg-success">Completed</span>
+                                            <span class="status-badge completed"><span class="dot"></span>Completed</span>
                                         {% else %}
-                                            <span class="badge bg-warning text-dark">Pending</span>
+                                            <span class="status-badge pending"><span class="dot"></span>Pending</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ visit.location }}</td>
                                     <td>
-                                        <div class="btn-group btn-group-sm">
+                                        <div class="btn-group btn-group-sm action-group">
                                             <a href="{% url 'visits:detail' visit.pk %}" class="btn btn-outline-secondary"><i class="bi bi-list-task me-1"></i>Timeline</a>
                                             <a href="{% url 'visits:edit' visit.pk %}" class="btn btn-outline-primary"><i class="bi bi-pencil-square me-1"></i>Edit</a>
                                             {% if visit.status != 'Completed' and visit.visit_date >= today %}
@@ -142,6 +144,75 @@
         border: 1px solid #e2e8f0;
         border-radius: 1.1rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+
+    .visits-table thead th {
+        background: #f7faf7;
+        color: #354F52;
+        font-weight: 700;
+        border-bottom: 1px solid #dfe8de;
+    }
+
+    .visits-table tbody tr {
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .visits-table tbody tr:hover {
+        background: #f8fbf7;
+        transform: translateY(-1px);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.38rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: 1px solid #dfe8de;
+    }
+
+    .status-badge.completed {
+        background: rgba(47, 158, 68, 0.12);
+        color: #2f9e44;
+    }
+
+    .status-badge.pending {
+        background: rgba(245, 159, 0, 0.14);
+        color: #c77d06;
+    }
+
+    .status-badge .dot {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-badge.completed .dot {
+        background: #2f9e44;
+    }
+
+    .status-badge.pending .dot {
+        background: #f59f00;
+    }
+
+    .action-group .btn {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .action-group .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(47, 62, 70, 0.08);
+    }
+
+    @media (max-width: 767.98px) {
+        .action-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
     }
 </style>
 {% endblock %}

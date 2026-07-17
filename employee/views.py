@@ -1,8 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from .forms import EmployeeProfileForm
@@ -58,6 +59,98 @@ def employee_list_view(request):
             "name_filter": name_filter,
         },
     )
+
+
+@login_required(login_url="login")
+@admin_required
+def employee_create_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        form_data = request.POST.copy()
+        if not username:
+            messages.error(request, "Username is required.")
+            return render(request, "employee/form.html", {"title": "Add Employee"})
+
+        User = get_user_model()
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "A user with that username already exists.")
+            return render(request, "employee/form.html", {"title": "Add Employee"})
+
+        if not password:
+            messages.error(request, "Password is required.")
+            return render(request, "employee/form.html", {"title": "Add Employee"})
+
+        user = User.objects.create_user(username=username, password=password)
+        employee = Employee.objects.create(
+            user=user,
+            name=form_data.get("name", "").strip(),
+            email=form_data.get("email", "").strip(),
+            phone_number=form_data.get("phone_number") or None,
+            password=password,
+            role=form_data.get("role", Employee.Role.EMPLOYEE),
+        )
+        messages.success(request, "Employee created successfully.")
+        return redirect("employee:list")
+
+    return render(request, "employee/form.html", {"title": "Add Employee"})
+
+
+@login_required(login_url="login")
+@admin_required
+def employee_detail_view(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    return render(request, "employee/detail.html", {"employee": employee})
+
+
+@login_required(login_url="login")
+@admin_required
+def employee_edit_view(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        new_email = request.POST.get("email", "").strip()
+        if employee.user and employee.user.username != username and get_user_model().objects.filter(username=username).exclude(pk=employee.user_id).exists():
+            messages.error(request, "A user with that username already exists.")
+            return render(request, "employee/form.html", {"title": "Edit Employee", "employee": employee})
+
+        if employee.user is not None:
+            if username:
+                employee.user.username = username
+            if new_email:
+                employee.user.email = new_email
+            employee.user.save(update_fields=["username", "email"])
+
+        employee.name = request.POST.get("name", "").strip()
+        employee.email = new_email
+        employee.phone_number = request.POST.get("phone_number") or None
+        employee.role = request.POST.get("role", employee.role)
+        if password:
+            employee.password = password
+            if employee.user is not None:
+                employee.user.set_password(password)
+                employee.user.save(update_fields=["password"])
+        employee.save()
+        messages.success(request, "Employee updated successfully.")
+        return redirect("employee:list")
+
+    return render(request, "employee/form.html", {"title": "Edit Employee", "employee": employee})
+
+
+@login_required(login_url="login")
+@admin_required
+def employee_delete_view(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    if request.method == "POST":
+        if employee.user is not None:
+            employee.user.delete()
+        else:
+            employee.delete()
+        messages.success(request, "Employee deleted successfully.")
+        return redirect("employee:list")
+
+    return render(request, "employee/delete_confirm.html", {"employee": employee})
 
 
 class EmployeeListView(ListAPIView):

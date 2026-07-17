@@ -6,8 +6,8 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reports</h1>
-            <p class="text-muted mb-0">Overview of your activity in the Field Visit Tracker.</p>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i>{% if is_admin %}Reports{% else %}My Reports{% endif %}</h1>
+            <p class="text-muted mb-0">{% if is_admin %}Overview of activity across all employees in the Field Visit Tracker.{% else %}Overview of your activity in the Field Visit Tracker.{% endif %}</p>
         </div>
         <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
     </div>
@@ -23,15 +23,17 @@
                     <label for="to_date" class="form-label">To Date</label>
                     <input type="date" class="form-control" id="to_date" name="to_date" value="{{ to_date }}">
                 </div>
-                <div class="col-md-3">
-                    <label for="employee" class="form-label">Employee</label>
-                    <select class="form-select" id="employee" name="employee">
-                        <option value="">All</option>
-                        {% for employee in employees %}
-                            <option value="{{ employee.id }}" {% if employee.id|stringformat:"s" == employee_id %}selected{% endif %}>{{ employee.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                {% if is_admin %}
+                    <div class="col-md-3">
+                        <label for="employee" class="form-label">Employee</label>
+                        <select class="form-select" id="employee" name="employee">
+                            <option value="">All</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}" {% if employee.id|stringformat:"s" == employee_id %}selected{% endif %}>{{ employee.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
                 <div class="col-md-2">
                     <label for="status" class="form-label">Visit Status</label>
                     <select class="form-select" id="status" name="status">
@@ -44,13 +46,9 @@
                     <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Go</span></button>
                 </div>
                 <div class="col-12 d-flex flex-wrap gap-2">
-                    {% if request.user.role == 'ADMIN' or request.user.is_superuser %}
-                        <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
-                        <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
-                        <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
-                    {% else %}
-                        <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
-                    {% endif %}
+                    <button type="submit" class="btn btn-outline-danger btn-loading" formaction="{% url 'reports:download_pdf' %}"><i class="bi bi-file-earmark-pdf me-2"></i><span class="btn-text">Download PDF</span></button>
+                    <button type="submit" class="btn btn-outline-success btn-loading" formaction="{% url 'reports:download_excel' %}"><i class="bi bi-file-earmark-excel me-2"></i><span class="btn-text">Download Excel</span></button>
+                    <button type="submit" class="btn btn-outline-dark btn-loading" formaction="{% url 'reports:download_csv' %}"><i class="bi bi-filetype-csv me-2"></i><span class="btn-text">Download CSV</span></button>
                 </div>
             </form>
         </div>

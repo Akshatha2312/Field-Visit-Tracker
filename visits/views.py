@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from dashboard.models import ActivityLog
-from employee.permissions import get_scoped_queryset
+from employee.permissions import get_scoped_queryset, is_admin_user
 from employee.utils import get_employee_for_user
 
 from .forms import ClientVisitForm
@@ -129,8 +129,12 @@ def visit_create(request):
 
 @login_required(login_url="login")
 def visit_edit(request, pk):
-    employee = get_employee_for_user(request.user)
-    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    visit = get_object_or_404(ClientVisit, pk=pk)
+    if not is_admin_user(request.user):
+        employee = get_employee_for_user(request.user)
+        if employee is None or visit.employee_id != employee.pk:
+            messages.error(request, "You can only edit your own visits.")
+            return redirect("visits:list")
 
     if request.method == "POST":
         form = ClientVisitForm(request.POST, instance=visit)
@@ -146,8 +150,12 @@ def visit_edit(request, pk):
 
 @login_required(login_url="login")
 def visit_delete(request, pk):
-    employee = get_employee_for_user(request.user)
-    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    visit = get_object_or_404(ClientVisit, pk=pk)
+    if not is_admin_user(request.user):
+        employee = get_employee_for_user(request.user)
+        if employee is None or visit.employee_id != employee.pk:
+            messages.error(request, "You can only delete your own visits.")
+            return redirect("visits:list")
 
     if request.method == "POST":
         visit.delete()
@@ -159,25 +167,37 @@ def visit_delete(request, pk):
 
 @login_required(login_url="login")
 def mark_completed(request, pk):
-    employee = get_employee_for_user(request.user)
-    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    visit = get_object_or_404(ClientVisit, pk=pk)
+    if not is_admin_user(request.user):
+        employee = get_employee_for_user(request.user)
+        if employee is None or visit.employee_id != employee.pk:
+            messages.error(request, "You can only complete your own visits.")
+            return redirect("visits:list")
+        actor = employee
+    else:
+        actor = visit.employee
+
     visit.status = ClientVisit.Status.COMPLETED
     visit.save(update_fields=["status"])
     ActivityLog.objects.create(
-        employee=employee,
+        employee=actor,
         activity_type=ActivityLog.ActivityType.VISIT_COMPLETED,
         title="Visit Completed",
-        description=f"{employee.name} completed the visit for {visit.client_name}.",
+        description=f"{actor.name} completed the visit for {visit.client_name}.",
     )
-    send_visit_completed_email(employee, visit)
+    send_visit_completed_email(actor, visit)
     messages.success(request, "Visit marked as completed.")
     return redirect("visits:list")
 
 
 @login_required(login_url="login")
 def visit_detail(request, pk):
-    employee = get_employee_for_user(request.user)
-    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    visit = get_object_or_404(ClientVisit, pk=pk)
+    if not is_admin_user(request.user):
+        employee = get_employee_for_user(request.user)
+        if employee is None or visit.employee_id != employee.pk:
+            messages.error(request, "You can only view your own visits.")
+            return redirect("visits:list")
     today = timezone.localdate()
     timeline_steps = [
         {"label": "Visit Created", "status": "complete"},
@@ -237,8 +257,14 @@ def visit_reports(request):
 
 @login_required(login_url="login")
 def send_visit_reminder(request, pk):
-    employee = get_employee_for_user(request.user)
-    visit = get_object_or_404(ClientVisit, pk=pk, employee=employee)
+    visit = get_object_or_404(ClientVisit, pk=pk)
+    if not is_admin_user(request.user):
+        employee = get_employee_for_user(request.user)
+        if employee is None or visit.employee_id != employee.pk:
+            messages.error(request, "You can only send reminders for your own visits.")
+            return redirect("visits:list")
+    else:
+        employee = visit.employee
 
     today = timezone.localdate()
     tomorrow = today + timedelta(days=1)

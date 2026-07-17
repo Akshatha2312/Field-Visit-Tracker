@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | Field Visit Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-person-plus me-2"></i>{{ title }}</h1>
+            <p class="text-muted mb-0">Create or update an employee record.</p>
+        </div>
+        <a href="{% url 'employee:list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
+    </div>
+
+    <div class="card modern-card">
+        <div class="card-body p-4">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{% if employee and employee.user %}{{ employee.user.username }}{% endif %}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ employee.name|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone_number" class="form-label">Phone Number</label>
+                    <input type="number" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="EMPLOYEE" {% if employee and employee.role == 'EMPLOYEE' %}selected{% endif %}>Employee</option>
+                        <option value="ADMIN" {% if employee and employee.role == 'ADMIN' %}selected{% endif %}>Admin</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" {% if not employee %}required{% endif %}>
+                </div>
+                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-check2-circle me-2"></i>Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+</style>
+{% endblock %}

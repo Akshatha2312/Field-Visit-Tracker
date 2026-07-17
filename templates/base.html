@@ -6,7 +6,8 @@
     <title>{% block title %}Field Visit Tracker{% endblock %}</title>
 
     {% load static %}
-    <link rel="icon" type="image/png" href="{% static 'favicon/favicon.ico.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/logo.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,26 +15,42 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --brand-primary: #2563eb;
-            --brand-dark: #1d4ed8;
-            --brand-accent: #0f766e;
-            --surface: #ffffff;
-            --surface-muted: #f8fbff;
-            --text-primary: #0f172a;
-            --text-muted: #64748b;
-            --border-soft: #e2e8f0;
+            --brand-primary: #52796F;
+            --brand-secondary: #84A98C;
+            --brand-dark: #354F52;
+            --brand-navbar: #2F3E46;
+            --surface: #FFFFFF;
+            --surface-muted: #CAD2C5;
+            --text-primary: #2F3E46;
+            --text-muted: #5c6f72;
+            --border-soft: #dfe8de;
+            --shadow-soft: 0 10px 30px rgba(47, 62, 70, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f8fbff 0%, #f4f7fb 100%);
+            font-family: 'Inter', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--surface-muted) 0%, #dfe8de 100%);
             color: var(--text-primary);
             min-height: 100vh;
+            transition: background-color 0.2s ease;
+        }
+
+        a {
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        a:hover {
+            color: var(--brand-primary);
         }
 
         .navbar {
-            background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+            background: var(--brand-navbar);
+            box-shadow: 0 8px 24px rgba(47, 62, 70, 0.16);
         }
 
         .navbar-brand {
@@ -44,19 +61,22 @@
         .navbar-brand img {
             width: 2.1rem;
             height: 2.1rem;
+            max-width: 100%;
             object-fit: cover;
             border-radius: 0.7rem;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+            box-shadow: 0 4px 12px rgba(47, 62, 70, 0.18);
+            flex-shrink: 0;
         }
 
         .navbar .nav-link {
             color: rgba(255,255,255,0.92);
             font-weight: 600;
-            transition: color 0.15s ease, opacity 0.15s ease;
+            transition: color 0.2s ease, transform 0.2s ease;
         }
 
         .navbar .nav-link:hover {
             color: #ffffff;
+            transform: translateY(-1px);
         }
 
         main {
@@ -66,29 +86,59 @@
         .card {
             border: 1px solid var(--border-soft);
             border-radius: 1.1rem;
-            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+            box-shadow: var(--shadow-soft);
             background: var(--surface);
+            transition: box-shadow 0.15s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 24px rgba(47, 62, 70, 0.1);
         }
 
         .btn {
-            border-radius: 0.8rem;
+            border-radius: 0.85rem;
             font-weight: 600;
             padding: 0.7rem 1.1rem;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+            box-shadow: 0 4px 10px rgba(47, 62, 70, 0.08);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
             transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(47, 62, 70, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.16);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .btn:focus-visible::after,
+        .btn:hover::after {
+            opacity: 1;
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-dark) 100%);
+            background: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
             border-color: var(--brand-primary);
+            color: #fff;
         }
 
         .btn-primary:hover {
-            background: var(--brand-dark);
+            background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
             border-color: var(--brand-dark);
+            color: #fff;
         }
 
         .btn-outline-secondary {
@@ -110,20 +160,21 @@
         .form-control,
         .form-select {
             border: 1px solid var(--border-soft);
-            border-radius: 0.8rem;
+            border-radius: 0.85rem;
             padding: 0.7rem 0.9rem;
             box-shadow: none;
             background-color: var(--surface);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         .form-control:focus,
         .form-select:focus {
             border-color: var(--brand-primary);
-            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.14);
         }
 
         .footer {
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.85);
             border-top: 1px solid var(--border-soft);
             color: var(--text-muted);
         }
@@ -138,6 +189,7 @@
 
         h1, h2, h3, h4, h5, h6 {
             letter-spacing: -0.01em;
+            color: var(--text-primary);
         }
 
         .toast-container {
@@ -146,7 +198,7 @@
 
         .toast {
             border-radius: 1rem;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 10px 24px rgba(47, 62, 70, 0.12);
         }
 
         .toast .toast-icon {
@@ -156,7 +208,7 @@
         .empty-state {
             border: 1px dashed var(--border-soft);
             border-radius: 1.1rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5ef 100%);
             padding: 2rem 1.5rem;
             text-align: center;
         }
@@ -182,10 +234,21 @@
             width: 2.75rem;
             height: 2.75rem;
             border-radius: 0.9rem;
-            background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+            background: linear-gradient(135deg, #eef4ef 0%, #f8fbf7 100%);
             color: var(--brand-primary);
             font-size: 1.2rem;
             margin-right: 0.75rem;
+        }
+
+        .list-group-item,
+        .nav-link,
+        .table a {
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .table a:hover,
+        .list-group-item:hover {
+            color: var(--brand-dark);
         }
     </style>
 </head>
@@ -271,7 +334,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.toast').forEach(function (toastEl) {
-            const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            const toast = new bootstrap.Toast(toastEl, { delay: 3200 });
             toast.show();
         });
 
@@ -281,6 +344,8 @@
                 if (!element.dataset.originalHtml) {
                     element.dataset.originalHtml = element.innerHTML;
                 }
+                if (element.dataset.loadingLocked === 'true') return;
+                element.dataset.loadingLocked = 'true';
                 element.disabled = true;
                 element.setAttribute('aria-disabled', 'true');
                 element.classList.add('disabled', 'loading');
@@ -290,6 +355,7 @@
                 element.removeAttribute('aria-disabled');
                 element.classList.remove('disabled', 'loading');
                 element.innerHTML = element.dataset.originalHtml || element.innerHTML;
+                delete element.dataset.loadingLocked;
             }
         }
 
@@ -323,8 +389,9 @@
                     event.preventDefault();
                     return;
                 }
-                // Show loading state immediately
-                setLoadingState(button, true);
+                if (button.matches('a.btn-loading')) {
+                    setLoadingState(button, true);
+                }
             });
         });
 
@@ -333,7 +400,6 @@
             form.addEventListener('submit', function () {
                 const submitButtons = form.querySelectorAll('button[type="submit"].btn-loading');
                 submitButtons.forEach(function(btn) {
-                    // Show loading state immediately
                     setLoadingState(btn, true);
                 });
             });

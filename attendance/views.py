@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from dashboard.models import ActivityLog
-from employee.permissions import get_scoped_queryset
+from employee.permissions import get_scoped_queryset, is_admin_user
 from employee.utils import get_employee_for_user
 
 from .models import Attendance
@@ -75,6 +75,43 @@ def attendance_dashboard(request):
         "calendar_weeks": calendar_weeks,
     }
     return render(request, "attendance/dashboard.html", context)
+
+
+@login_required(login_url="login")
+def attendance_management(request):
+    if not is_admin_user(request.user):
+        return redirect("attendance:dashboard")
+
+    search_query = request.GET.get("q", "").strip()
+    date_filter = request.GET.get("date", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
+    attendances_qs = Attendance.objects.select_related("employee").order_by("-date", "-check_in")
+
+    if search_query:
+        attendances_qs = attendances_qs.filter(employee__name__icontains=search_query)
+
+    if date_filter:
+        attendances_qs = attendances_qs.filter(date=date_filter)
+
+    if status_filter:
+        attendances_qs = attendances_qs.filter(status=status_filter)
+
+    paginator = Paginator(attendances_qs, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "attendance/management.html",
+        {
+            "attendances": page_obj.object_list,
+            "page_obj": page_obj,
+            "search_query": search_query,
+            "date_filter": date_filter,
+            "status_filter": status_filter,
+        },
+    )
 
 
 @login_required(login_url="login")

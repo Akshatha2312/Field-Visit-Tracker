@@ -20,7 +20,7 @@
             <div class="card modern-card h-100">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-3">
-                        <div class="status-icon me-3">🗓️</div>
+                        <div class="status-icon me-3"><i class="bi bi-calendar2-check"></i></div>
                         <div>
                             <h5 class="card-title mb-0"><i class="bi bi-calendar2-check me-2"></i>Today's Status</h5>
                             <p class="text-muted small mb-0">Your attendance summary for today</p>
@@ -28,9 +28,18 @@
                     </div>
                     {% if today_attendance %}
                         <div class="row g-3 mt-1">
-                            <div class="col-sm-4"><strong>Status</strong><div class="mt-2"><span class="badge bg-success rounded-pill">{{ today_attendance.status }}</span></div></div>
-                            <div class="col-sm-4"><strong>Check In</strong><div class="text-muted">{{ today_attendance.check_in|default:'Not recorded' }}</div></div>
-                            <div class="col-sm-4"><strong>Check Out</strong><div class="text-muted">{{ today_attendance.check_out|default:'Not recorded' }}</div></div>
+                            <div class="col-sm-4">
+                                <div class="small text-muted mb-1">Status</div>
+                                <div class="fw-semibold">{{ today_attendance.status }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="small text-muted mb-1">Check In</div>
+                                <div class="text-muted">{{ today_attendance.check_in|default:'Not recorded' }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="small text-muted mb-1">Check Out</div>
+                                <div class="text-muted">{{ today_attendance.check_out|default:'Not recorded' }}</div>
+                            </div>
                         </div>
                     {% else %}
                         <p class="text-muted mb-0">No attendance record for today yet.</p>
@@ -43,7 +52,7 @@
             <div class="card modern-card h-100">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-3">
-                        <div class="status-icon me-3">⚡</div>
+                        <div class="status-icon me-3"><i class="bi bi-lightning-charge"></i></div>
                         <div>
                             <h5 class="card-title mb-0"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</h5>
                             <p class="text-muted small mb-0">Jump to your next task</p>
@@ -64,8 +73,14 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h5 class="card-title mb-1">Monthly Attendance Calendar</h5>
-                    <p class="text-muted small mb-0">Present, Absent, Check-In, and Check-Out appear with distinct colors.</p>
+                    <p class="text-muted small mb-0">A clearer view of daily attendance status for the month.</p>
                 </div>
+            </div>
+            <div class="legend-row mb-3">
+                <span class="legend-item"><span class="legend-dot completed"></span>Attendance completed</span>
+                <span class="legend-item"><span class="legend-dot partial"></span>Partial attendance</span>
+                <span class="legend-item"><span class="legend-dot absent"></span>No attendance</span>
+                <span class="legend-item"><span class="legend-dot current"></span>Current day</span>
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered align-middle text-center calendar-table">
@@ -80,15 +95,15 @@
                                 {% for day in week %}
                                     {% if day %}
                                         <td class="calendar-cell {% if day.is_today %}calendar-today{% endif %}">
-                                            <div class="fw-semibold">{{ day.date.day }}</div>
+                                            <div class="fw-semibold mb-2">{{ day.date.day }}</div>
                                             {% if day.status == 'Present' %}
-                                                <span class="badge bg-success">Present</span>
+                                                <div class="status-pill completed"><span class="dot"></span>Completed</div>
                                             {% elif day.status == 'Absent' %}
-                                                <span class="badge bg-danger">Absent</span>
+                                                <div class="status-pill absent"><span class="dot"></span>No attendance</div>
                                             {% elif day.status == 'Checked In' %}
-                                                <span class="badge bg-info text-dark">Check-In</span>
+                                                <div class="status-pill partial"><span class="dot"></span>Partial</div>
                                             {% elif day.status == 'Checked Out' %}
-                                                <span class="badge bg-warning text-dark">Check-Out</span>
+                                                <div class="status-pill partial"><span class="dot"></span>Partial</div>
                                             {% endif %}
                                         </td>
                                     {% else %}
@@ -117,19 +132,72 @@
         align-items: center;
         justify-content: center;
         border-radius: 0.9rem;
-        background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+        background: linear-gradient(135deg, #eef4ef 0%, #f8fbf7 100%);
         font-size: 1.2rem;
+        color: #52796F;
+    }
+    .legend-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        color: #5c6f72;
+        font-size: 0.95rem;
+    }
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .legend-dot,
+    .dot {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .legend-dot.completed,
+    .dot.completed,
+    .status-pill.completed .dot {
+        background: #2f9e44;
+    }
+    .legend-dot.partial,
+    .dot.partial,
+    .status-pill.partial .dot {
+        background: #f59f00;
+    }
+    .legend-dot.absent,
+    .dot.absent,
+    .status-pill.absent .dot {
+        background: #e03131;
+    }
+    .legend-dot.current,
+    .dot.current {
+        background: #1c7cd6;
+    }
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        padding: 0.34rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: #f8fbf7;
+        color: #354F52;
+        border: 1px solid #dfe8de;
     }
     .calendar-table th, .calendar-table td {
         min-width: 90px;
-        height: 92px;
+        height: 100px;
         vertical-align: top;
+        padding: 0.7rem;
     }
     .calendar-cell {
         background: #fff;
     }
     .calendar-today {
-        background: #eef4ff;
+        background: linear-gradient(135deg, #eef4ef 0%, #ffffff 100%);
         box-shadow: inset 0 0 0 1px #93c5fd;
     }
     .calendar-empty {
@@ -138,7 +206,7 @@
     @media (max-width: 767.98px) {
         .calendar-table th, .calendar-table td {
             min-width: 70px;
-            height: 84px;
+            height: 88px;
             font-size: 0.85rem;
         }
     }

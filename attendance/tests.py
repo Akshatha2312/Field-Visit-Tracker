@@ -69,3 +69,31 @@ class AttendanceViewTests(TestCase):
         attendance = Attendance.objects.get(employee=self.employee)
         self.assertIsNotNone(attendance.check_out)
         self.assertEqual(attendance.status, Attendance.Status.CHECKED_OUT)
+
+    def test_admin_can_view_attendance_management(self):
+        admin_user = get_user_model().objects.create_user(
+            username="admin",
+            email="admin@example.com",
+            password="secret123",
+        )
+        Employee.objects.create(
+            name="Admin User",
+            email="adminuser@example.com",
+            password="secret123",
+            role=Employee.Role.ADMIN,
+            user=admin_user,
+        )
+        self.client.force_login(admin_user)
+
+        response = self.client.get(reverse("attendance:management"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "attendance/management.html")
+
+    def test_employee_is_redirected_from_attendance_management(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("attendance:management"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("attendance:dashboard"))

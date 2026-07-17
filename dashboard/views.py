@@ -12,30 +12,71 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from attendance.models import Attendance
 from employee.models import Employee
 from employee.permissions import is_admin_user
-from employee.utils import get_employee_for_user, get_user_role
 from visits.models import ClientVisit
 
 from .models import ActivityLog
+
+
+def _build_dashboard_context(request):
+    today = timezone.localdate()
+    current_month = today.month
+
+    employee_count = Employee.objects.count()
+
+    attendance_aggs = Attendance.objects.aggregate(
+        today_count=Count('id', filter=Q(date=today)),
+        month_count=Count('id', filter=Q(date__month=current_month)),
+        today_present=Count('id', filter=Q(date=today, status=Attendance.Status.PRESENT)),
+    )
+
+    visit_aggs = ClientVisit.objects.aggregate(
+        today_count=Count('id', filter=Q(visit_date=today)),
+        pending_count=Count('id', filter=Q(status=ClientVisit.Status.PENDING)),
+        monthly_count=Count('id', filter=Q(visit_date__month=current_month)),
+        completed_count=Count('id'),
+        total_count=Count('id'),
+    )
+
+    total_visits = visit_aggs['total_count']
+    completed_visits = visit_aggs['completed_count']
+
+    stats = {
+        'total_employees': employee_count,
+        'todays_attendance': attendance_aggs['today_count'],
+        'todays_client_visits': visit_aggs['today_count'],
+        'pending_visits': visit_aggs['pending_count'],
+        'monthly_visits': visit_aggs['monthly_count'],
+        'average_attendance': round(
+            attendance_aggs['month_count'] / max(employee_count, 1) * 100, 1
+        ) if employee_count else 0,
+        'completion_rate': round(
+            completed_visits * 100 / max(total_visits, 1), 1
+        ) if total_visits else 0,
+        'employees_present_today': attendance_aggs['today_present'],
+    }
+    recent_activities = ActivityLog.objects.select_related('employee').order_by('-created_at')[:10]
+    return {
+        'stats': stats,
+        'recent_activities': recent_activities,
+        'is_admin': is_admin_user(request.user),
+    }
 
 
 def _get_dashboard_redirect_name(user):
     if not getattr(user, 'is_authenticated', False):
         return 'employee_dashboard'
 
-    if getattr(user, 'is_superuser', False):
-        return 'admin_dashboard'
-
-    employee = getattr(user, 'employee', None)
-    if employee is None:
-        try:
-            employee = Employee.objects.get(user=user)
-        except Employee.DoesNotExist:
-            return 'employee_dashboard'
-
-    if employee.role == Employee.Role.ADMIN:
+    if is_admin_user(user):
         return 'admin_dashboard'
 
     return 'employee_dashboard'
+
+
+@login_required(login_url='login')
+def employee_dashboard(request):
+    context = _build_dashboard_context(request)
+    context['is_admin'] = False
+    return render(request, 'dashboard.html', context)
 
 
 def home(request):
@@ -71,55 +112,13 @@ def logout_view(request):
 
 
 @login_required(login_url='login')
+@login_required(login_url='login')
 def dashboard(request):
     if not is_admin_user(request.user):
         return redirect('attendance:dashboard')
 
-    today = timezone.localdate()
-    current_month = today.month
-    
-    # Get all counts in one aggregation call
-    employee_count = Employee.objects.count()
-    
-    # Use aggregates to get all dashboard stats efficiently
-    attendance_aggs = Attendance.objects.aggregate(
-        today_count=Count('id', filter=Q(date=today)),
-        month_count=Count('id', filter=Q(date__month=current_month)),
-        today_present=Count('id', filter=Q(date=today, status=Attendance.Status.PRESENT)),
-    )
-    
-    visit_aggs = ClientVisit.objects.aggregate(
-        today_count=Count('id', filter=Q(visit_date=today)),
-        pending_count=Count('id', filter=Q(status=ClientVisit.Status.PENDING)),
-        monthly_count=Count('id', filter=Q(visit_date__month=current_month)),
-        completed_count=Count('id'),
-        total_count=Count('id'),
-    )
-    
-    # Calculate derived values
-    total_visits = visit_aggs['total_count']
-    completed_visits = visit_aggs['completed_count']
-    
-    stats = {
-        'total_employees': employee_count,
-        'todays_attendance': attendance_aggs['today_count'],
-        'todays_client_visits': visit_aggs['today_count'],
-        'pending_visits': visit_aggs['pending_count'],
-        'monthly_visits': visit_aggs['monthly_count'],
-        'average_attendance': round(
-            attendance_aggs['month_count'] / max(employee_count, 1) * 100, 1
-        ) if employee_count else 0,
-        'completion_rate': round(
-            completed_visits * 100 / max(total_visits, 1), 1
-        ) if total_visits else 0,
-        'employees_present_today': attendance_aggs['today_present'],
-    }
-    recent_activities = ActivityLog.objects.select_related('employee').order_by('-created_at')[:10]
-    context = {
-        'stats': stats,
-        'recent_activities': recent_activities,
-        'is_admin': is_admin_user(request.user),
-    }
+    context = _build_dashboard_context(request)
+    context['is_admin'] = True
     return render(request, 'dashboard.html', context)
 
 

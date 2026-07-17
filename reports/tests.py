@@ -8,6 +8,49 @@ from visits.models import ClientVisit
 
 
 class ReportsAccessTests(TestCase):
+    def test_admin_reports_page_shows_employee_filter_and_full_exports(self):
+        admin_user = get_user_model().objects.create_user(username="adminreports", email="adminreports@example.com", password="secret123")
+        Employee.objects.create(
+            user=admin_user,
+            name="Admin Report User",
+            email="adminreportuser@example.com",
+            password="secret123",
+            role=Employee.Role.ADMIN,
+        )
+
+        self.client.force_login(admin_user)
+        response = self.client.get(reverse("reports:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reports")
+        self.assertContains(response, 'name="employee"')
+        self.assertContains(response, "Download PDF")
+        self.assertContains(response, "Download Excel")
+        self.assertContains(response, "Download CSV")
+
+    def test_employee_reports_page_uses_my_reports_and_hides_employee_filter(self):
+        user = get_user_model().objects.create_user(username="employeereports", email="employeereports@example.com", password="secret123")
+        employee = Employee.objects.create(user=user, name="Carol", email="carol@example.com", password="secret123")
+        Attendance.objects.create(employee=employee, date="2024-01-10", status=Attendance.Status.PRESENT)
+        ClientVisit.objects.create(
+            employee=employee,
+            client_name="John Doe",
+            company_name="Acme",
+            visit_date="2024-01-10",
+            location="Nairobi",
+            status=ClientVisit.Status.PENDING,
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("reports:dashboard"), {"from_date": "2024-01-01", "to_date": "2024-01-31"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "My Reports")
+        self.assertNotContains(response, 'name="employee"')
+        self.assertContains(response, "Download PDF")
+        self.assertContains(response, "Download Excel")
+        self.assertContains(response, "Download CSV")
+
     def test_employee_reports_only_include_their_own_data(self):
         user = get_user_model().objects.create_user(username="reporter", email="reporter@example.com", password="secret123")
         employee = Employee.objects.create(user=user, name="Alice", email="alice@example.com", password="secret123")
