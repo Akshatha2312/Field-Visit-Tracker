@@ -94,11 +94,13 @@ def employee_create_view(request):
             return render(request, "employee/form.html", {"title": "Add Employee"})
 
         user = User.objects.create_user(username=username, password=password)
+        phone_number_str = form_data.get("phone_number", "").strip()
+        phone_number = int(phone_number_str) if phone_number_str else None
         employee = Employee.objects.create(
             user=user,
             name=form_data.get("name", "").strip(),
             email=form_data.get("email", "").strip(),
-            phone_number=form_data.get("phone_number") or None,
+            phone_number=phone_number,
             password=password,
             role=form_data.get("role", Employee.Role.EMPLOYEE),
         )
@@ -150,7 +152,8 @@ def employee_edit_view(request, pk):
 
         employee.name = request.POST.get("name", "").strip()
         employee.email = new_email
-        employee.phone_number = request.POST.get("phone_number") or None
+        phone_number_str = request.POST.get("phone_number", "").strip()
+        employee.phone_number = int(phone_number_str) if phone_number_str else None
         employee.role = request.POST.get("role", employee.role)
         if password:
             employee.password = password

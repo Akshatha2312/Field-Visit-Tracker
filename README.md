@@ -1,342 +1,323 @@
-# 🚀 Field Visit Tracker
+# 🚀 Field Visit Tracker System
 
-Field Visit Tracker is a web-based application developed using **Django** to simplify the management of employee attendance and client visits. It allows employees to record their daily attendance, manage client visits, and generate reports, while giving administrators a centralized dashboard to monitor overall activities.
+A web-based Field Visit Tracker System built using **Python**, **Django**, **SQLite**, **HTML**, **CSS**, and **Bootstrap**. The application helps organizations efficiently manage employees, track client visits, monitor attendance, and generate reports through an easy-to-use dashboard.
 
-The goal of this project is to replace manual tracking methods with a simple, organized, and efficient digital system.
+---
+
+## 🌐 Live Demo
+
+🔗 https://field-visit-tracker-cmoq.onrender.com
+
+---
+
+## 📌 Project Overview
+
+The Field Visit Tracker System is designed to simplify the management of employees who perform field visits. It provides an organized platform to manage employees, record attendance, schedule and track client visits, and generate reports for better monitoring.
+
+The system includes an administrator panel that allows complete control over employee records, attendance management, and visit tracking.
 
 ---
 
 # ✨ Features
 
-### Authentication
-- Secure login and logout
-- Forgot password using email
-- Profile management
-
-### Employee Management
+### 👨‍💼 Employee Management
+- Add new employees
+- Update employee information
+- Delete employee records
 - View employee details
-- Search employees by name or email
-- Filter employees by role
-- Update profile information
+- Role-based employee management
 
-### Attendance Management
-- Check In
-- Check Out
-- View attendance history
-- Search attendance records
-- Filter by date and status
-- Pagination
-- Email notifications after check-in and check-out
+### 📅 Attendance Management
+- Mark employee attendance
+- View attendance records
+- Edit attendance
+- Attendance history
 
-### Client Visit Management
-Employees can:
-
-- Add new client visits
-- Update visit information
-- Delete visits
+### 📍 Client Visit Management
+- Add client visit details
 - Track visit status
-- Search and filter visit records
-- View paginated visit history
+- Update visit information
+- View visit history
 
-Each visit stores:
+### 📊 Dashboard
+- Employee statistics
+- Attendance summary
+- Client visit summary
+- Quick navigation
 
-- Client Name
-- Company Name
-- Contact Number
-- Location
-- Visit Date
-- Purpose
-- Remarks
-- Visit Status
+### 📄 Reports
+- Attendance reports
+- Employee reports
+- Visit reports
+- Export reports
 
----
-
-# 📊 Dashboard
-
-The dashboard provides an overview of important information including:
-
-- Total Employees
-- Today's Attendance
-- Total Client Visits
-- Pending Visits
-
-It also includes interactive charts built using **Chart.js** to visualize:
-
-- Attendance distribution
-- Monthly client visits
-- Visit status
-- Employee-wise visit statistics
+### 🔐 Authentication
+- Secure Login
+- Django Admin Panel
+- User Authentication
+- Session Management
 
 ---
 
-# 📑 Reports
+# 🛠️ Technology Stack
 
-The Reports module allows users to generate filtered reports based on:
-
-- Date range
-- Employee
-- Visit status
-
-Reports can be downloaded in multiple formats:
-
-- PDF
-- Excel
-- CSV
-
-Each report contains attendance statistics along with detailed visit information.
-
----
-
-# 📧 Email Notifications
-
-Automatic email notifications are sent when:
-
-- An employee checks in
-- An employee checks out
-- A client visit is created
-- A client visit is marked as completed
-- A password reset is requested
-
----
-
-# 🌐 REST APIs
-
-The project also provides read-only REST APIs using **Django REST Framework**.
-
-Available endpoints:
-
-```
-/api/employees/
-/api/employees/<id>/
-
-/api/attendance/
-/api/attendance/<id>/
-
-/api/visits/
-/api/visits/<id>/
-```
-
----
-
-# ⚠ Error Handling
-
-Custom error pages have been created for:
-
-- 400 – Bad Request
-- 403 – Forbidden
-- 404 – Page Not Found
-- 500 – Internal Server Error
-
-The application also handles invalid report filters and empty search results gracefully.
-
----
-
-# 🛠 Tech Stack
-
-### Backend
-- Python
-- Django
-- Django REST Framework
-
-### Frontend
-- HTML
-- CSS
-- Bootstrap 5
-- JavaScript
-- Chart.js
-
-### Database
-- SQLite
-
-### Libraries Used
-- ReportLab
-- OpenPyXL
+| Technology | Used |
+|------------|------|
+| Python | ✔ |
+| Django | ✔ |
+| SQLite | ✔ |
+| HTML5 | ✔ |
+| CSS3 | ✔ |
+| Bootstrap | ✔ |
+| JavaScript | ✔ |
+| Git | ✔ |
+| GitHub | ✔ |
+| Render | ✔ |
 
 ---
 
 # 📂 Project Structure
 
 ```
-FieldVisitTracker
+FieldVisitTracker/
 │
-├── attendance
-├── dashboard
-├── employee
-├── reports
-├── visits
-├── templates
-├── static
-├── config
+├── attendance/
+├── dashboard/
+├── employee/
+├── reports/
+├── visits/
+├── templates/
+├── static/
+├── media/
+├── FieldVisitTracker/
 ├── manage.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-# ⚙ Getting Started
+# ⚙️ Installation
 
-### Clone the repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/Akshatha2312/Field-Visit-Tracker.git
+```
+
+Go to project directory
+
+```bash
 cd Field-Visit-Tracker
 ```
 
-### Create a virtual environment
+Create Virtual Environment
+
+### Windows
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
-Activate it:
-
-Windows
+Activate Virtual Environment
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
-Linux / macOS
-
-```bash
-source venv/bin/activate
-```
-
-### Install dependencies
+Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Apply migrations
+Run Database Migrations
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
-### Create a superuser
+Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### Run the project
+Run Development Server
 
 ```bash
 python manage.py runserver
 ```
 
-Open your browser and visit:
+Open
 
 ```
-http://127.0.0.1:8000/
+http://127.0.0.1:8000
 ```
 
 ---
 
-# 🗄 Database Models
+# 🚀 Deployment
 
-### Employee
+The application is deployed using **Render**.
 
-- Name
-- Email
-- Phone Number
-- Role
+Deployment includes:
 
-### Attendance
+- Gunicorn
+- WhiteNoise
+- Static File Collection
+- Automatic Database Migration
+- Automatic Admin User Creation
 
-- Employee
-- Date
-- Check In
-- Check Out
-- Status
+---
 
-### Client Visit
+# 👤 Default Admin Credentials
 
-- Employee
-- Client Name
-- Company Name
-- Contact Number
-- Location
-- Visit Date
-- Purpose
-- Remarks
-- Status
+For deployed demo:
+
+```
+Username : admin
+Password : Admin@123
+```
 
 ---
 
 # 📸 Screenshots
 
-### Login Page
-*(Add screenshot here)*
+## Login Page
 
-### Dashboard
-*(Add screenshot here)*
-
-### Attendance Module
-*(Add screenshot here)*
-
-### Client Visit Module
-*(Add screenshot here)*
-
-### Reports
-*(Add screenshot here)*
-
-### Dashboard Analytics
-*(Add screenshot here)*
-
-### Employee Management
-*(Add screenshot here)*
+(Add Screenshot)
 
 ---
 
-# 📦 Report Export
+## Dashboard
 
-Reports can be downloaded as:
-
-- PDF
-- Excel
-- CSV
+(Add Screenshot)
 
 ---
 
-# 🔍 Project Highlights
+## Employee Management
 
-- Employee Attendance Management
+(Add Screenshot)
+
+---
+
+## Attendance Module
+
+(Add Screenshot)
+
+---
+
+## Client Visit Module
+
+(Add Screenshot)
+
+---
+
+## Reports
+
+(Add Screenshot)
+
+---
+
+# 📋 Modules
+
+- Authentication
+- Dashboard
+- Employee Management
+- Attendance Management
 - Client Visit Tracking
-- Interactive Dashboard
-- Report Generation
-- PDF, Excel & CSV Export
+- Reports
+- Django Admin
+
+---
+
+# 🔒 Security Features
+
+- Authentication System
+- Password Protection
+- Session Authentication
+- CSRF Protection
+- Input Validation
+
+---
+
+# 📈 Future Enhancements
+
 - Email Notifications
-- REST APIs
-- Search & Filters
-- Pagination
-- Responsive Design
-- Custom Error Pages
-git a
----
-
-# 🚀 Future Improvements
-
-Some features that can be added in the future include:
-
-- Google Maps integration
-- Live location tracking
-- QR code attendance
-- Face recognition attendance
-- Mobile application
-- Push notifications
-- Advanced analytics
+- GPS Location Tracking
+- QR Attendance
+- Mobile Responsive Dashboard
+- Employee Profile Photos
+- Analytics Dashboard
+- Export Reports to Excel/PDF
+- REST API Integration
+- Role-Based Access Control
+- MySQL Database Support
 
 ---
 
-# 👩‍💻 Author
+# 🧪 Testing
 
-**Akshatha**
+Tested Modules
 
-GitHub: https://github.com/Akshatha2312
+- Login
+- Logout
+- Employee CRUD
+- Attendance CRUD
+- Client Visit CRUD
+- Dashboard
+- Reports
+- Django Admin
 
 ---
 
-If you found this project useful, consider giving it a ⭐ on GitHub.
+# 📚 Learning Outcomes
+
+Through this project I learned:
+
+- Django Framework
+- Django ORM
+- Authentication & Authorization
+- CRUD Operations
+- SQLite Database
+- Bootstrap UI Development
+- Static File Management
+- Deployment on Render
+- Git & GitHub Workflow
+
+---
+
+# 🤝 Contributing
+
+Contributions, suggestions, and improvements are welcome.
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
+
+---
+
+# 👩‍💻 Developer
+
+**Akshatha Prabakaran**
+
+LinkedIn:
+https://www.linkedin.com/in/akshatha23/
+
+GitHub:
+https://github.com/Akshatha2312
+
+---
+
+# ⭐ Support
+
+If you found this project useful, please consider giving it a ⭐ on GitHub.
+
+---
+
+## 📄 License
+
+This project is developed for educational and portfolio purposes.

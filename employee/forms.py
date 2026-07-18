@@ -7,13 +7,18 @@ from .models import Employee
 class EmployeeProfileForm(forms.ModelForm):
     username = forms.CharField(required=False, disabled=True, label="Username")
     role = forms.CharField(required=False, disabled=True, label="Role")
-    phone_number = forms.IntegerField(
+    phone_number = forms.CharField(
         required=False,
         label="Phone Number",
-        min_value=1000000000,
-        max_value=999999999999999,
-        widget=forms.NumberInput(attrs={"class": "form-control"}),
-        error_messages={"invalid": "Enter a valid phone number with 10 to 15 digits."},
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "inputmode": "numeric",
+            "pattern": "[0-9]{10}",
+            "minlength": "10",
+            "maxlength": "10",
+            "title": "Please enter a valid 10-digit mobile number.",
+            "placeholder": "10-digit number"
+        }),
     )
 
     class Meta:
@@ -21,7 +26,11 @@ class EmployeeProfileForm(forms.ModelForm):
         fields = ["name", "email", "phone_number"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={
+                "class": "form-control",
+                "pattern": "[a-zA-Z0-9._%+-]+@gmail\\.com",
+                "title": "Please enter a valid Gmail address (example@gmail.com).",
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -33,3 +42,12 @@ class EmployeeProfileForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             if field_name not in {"username", "role"}:
                 field.widget.attrs.setdefault("class", "form-control")
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+        if phone_number:
+            try:
+                return int(phone_number)
+            except ValueError:
+                raise forms.ValidationError("Please enter a valid 10-digit mobile number.")
+        return None

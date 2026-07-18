@@ -26,11 +26,11 @@
                 </div>
                 <div class="col-md-6">
                     <label for="email" class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" title="Please enter a valid Gmail address (example@gmail.com)." required>
                 </div>
                 <div class="col-md-6">
                     <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
-                    <input type="number" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}">
+                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" title="Please enter a valid 10-digit mobile number." placeholder="10-digit number">
                 </div>
                 <div class="col-md-6">
                     <label for="role" class="form-label fw-semibold">Role</label>
