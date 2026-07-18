@@ -1,40 +1,66 @@
-<div class="card sidebar-card border-0">
-    <div class="card-body p-3">
-        <div class="fw-bold text-primary mb-3 d-flex align-items-center">
-            <span class="icon-badge me-2"><i class="bi bi-layout-sidebar-inset"></i></span>
-            {% if is_admin %}Admin Panel{% else %}Employee Panel{% endif %}
-        </div>
-        <div class="list-group list-group-flush">
-            {% if is_admin %}
-                <a href="{% url 'admin_dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                </a>
-                <a href="{% url 'attendance:management' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-calendar-check me-2"></i>Attendance Management
-                </a>
-                <a href="{% url 'visits:list' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-geo-alt-fill me-2"></i>Visits
-                </a>
-                <a href="{% url 'reports:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports
-                </a>
-            {% else %}
-                <a href="{% url 'attendance:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-calendar-check me-2"></i>My Attendance
-                </a>
-                <a href="{% url 'visits:list' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-geo-alt-fill me-2"></i>My Visits
-                </a>
-                <a href="{% url 'reports:dashboard' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>My Reports
-                </a>
-            {% endif %}
-            <a href="{% url 'employee:profile' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3">
-                <i class="bi bi-person-circle me-2"></i>Profile
-            </a>
-            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action border-0 px-0 py-2 rounded-3 text-danger">
-                <i class="bi bi-box-arrow-right me-2"></i>Logout
-            </a>
+<div class="dashboard-sidebar-card">
+    <div class="sidebar-header">
+        <div class="icon-badge me-2"><i class="bi bi-columns-gap"></i></div>
+        <div>
+            <div class="fw-bold text-primary sidebar-title">{% if is_admin %}Admin Panel{% else %}Employee Panel{% endif %}</div>
+            <div class="sidebar-subtitle">Navigation</div>
         </div>
     </div>
+
+    <nav class="sidebar-nav" aria-label="Dashboard navigation">
+        {% if is_admin %}
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-nav-link{% if request.path == '/dashboard/' or request.path == '/admin-dashboard/' %} active{% endif %}">
+                <i class="bi bi-speedometer2 sidebar-icon"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'attendance:management' %}" class="sidebar-nav-link{% if '/attendance/' in request.path %} active{% endif %}">
+                <i class="bi bi-calendar-check sidebar-icon"></i>
+                <span>Attendance</span>
+                <span class="visually-hidden">Attendance Management</span>
+            </a>
+            <a href="{% url 'visits:list' %}" class="sidebar-nav-link{% if '/visits/' in request.path %} active{% endif %}">
+                <i class="bi bi-geo-alt-fill sidebar-icon"></i>
+                <span>Visits</span>
+            </a>
+            <a href="{% url 'reports:dashboard' %}" class="sidebar-nav-link{% if '/reports/' in request.path %} active{% endif %}">
+                <i class="bi bi-file-earmark-bar-graph sidebar-icon"></i>
+                <span>Reports</span>
+            </a>
+            <a href="{% url 'employee:list' %}" class="sidebar-nav-link{% if '/employee/' in request.path %} active{% endif %}">
+                <i class="bi bi-people-fill sidebar-icon"></i>
+                <span>Employees</span>
+            </a>
+            <a href="{% url 'admin_dashboard' %}#analytics" class="sidebar-nav-link">
+                <i class="bi bi-bar-chart-line sidebar-icon"></i>
+                <span>Analytics</span>
+            </a>
+        {% else %}
+            <a href="{% url 'employee_dashboard' %}" class="sidebar-nav-link{% if request.path == '/employee-dashboard/' %} active{% endif %}">
+                <i class="bi bi-speedometer2 sidebar-icon"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'attendance:dashboard' %}" class="sidebar-nav-link{% if '/attendance/' in request.path %} active{% endif %}">
+                <i class="bi bi-calendar-check sidebar-icon"></i>
+                <span>Attendance</span>
+                <span class="visually-hidden">My Attendance</span>
+            </a>
+            <a href="{% url 'visits:list' %}" class="sidebar-nav-link{% if '/visits/' in request.path %} active{% endif %}">
+                <i class="bi bi-geo-alt-fill sidebar-icon"></i>
+                <span>Visits</span>
+            </a>
+            <a href="{% url 'reports:dashboard' %}" class="sidebar-nav-link{% if '/reports/' in request.path %} active{% endif %}">
+                <i class="bi bi-file-earmark-bar-graph sidebar-icon"></i>
+                <span>Reports</span>
+            </a>
+        {% endif %}
+
+        <a href="{% url 'employee:profile' %}" class="sidebar-nav-link{% if '/profile' in request.path %} active{% endif %}">
+            <i class="bi bi-person-circle sidebar-icon"></i>
+            <span>Profile</span>
+        </a>
+        <a href="{% url 'logout' %}" class="sidebar-nav-link sidebar-nav-link-danger">
+            <i class="bi bi-box-arrow-right sidebar-icon"></i>
+            <span>Logout</span>
+        </a>
+    </nav>
 </div>

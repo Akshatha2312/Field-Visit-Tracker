@@ -82,6 +82,29 @@ class ReportsAccessTests(TestCase):
         self.assertContains(response, "John Doe")
         self.assertNotContains(response, "Jane Doe")
 
+    def test_reports_page_displays_pagination_controls_when_many_results_exist(self):
+        user = get_user_model().objects.create_user(username="reporter_pagination", email="reporter_pagination@example.com", password="secret123")
+        employee = Employee.objects.create(user=user, name="Alice Pagination", email="alice-pagination@example.com", password="secret123")
+
+        for index in range(11):
+            ClientVisit.objects.create(
+                employee=employee,
+                client_name=f"Visit {index}",
+                company_name="Acme",
+                visit_date="2024-01-10",
+                location="Nairobi",
+                status=ClientVisit.Status.PENDING,
+            )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("reports:dashboard"), {"from_date": "2024-01-01", "to_date": "2024-01-31"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Previous")
+        self.assertContains(response, "Next")
+        self.assertContains(response, "Page 1")
+        self.assertContains(response, "Page 2")
+
 
 class ReportsPdfExportTests(TestCase):
     def test_download_pdf_returns_pdf_response(self):

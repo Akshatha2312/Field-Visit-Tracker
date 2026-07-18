@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render
 
@@ -65,6 +66,10 @@ def _get_report_context(request):
     attendance_records = attendance_queryset.order_by('-date', '-check_in')
     visits = visits_queryset.order_by('-visit_date', '-created_at')
 
+    paginator = Paginator(visits, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # Get all aggregates in single calls
     attendance_aggregates = attendance_queryset.aggregate(
         total=Count('id'),
@@ -87,7 +92,8 @@ def _get_report_context(request):
         'employee_name': employee_name,
         'visit_status': visit_status,
         'attendance_records': attendance_records,
-        'visits': visits,
+        'visits': page_obj.object_list,
+        'page_obj': page_obj,
         'generated_date': generated_at.strftime('%Y-%m-%d'),
         'generated_time': generated_at.strftime('%H:%M:%S'),
         'generated_at': generated_at.strftime('%Y-%m-%d %H:%M:%S'),

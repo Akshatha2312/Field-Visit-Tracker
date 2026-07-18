@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -49,11 +50,17 @@ def employee_list_view(request):
     if name_filter:
         employees = employees.filter(name__icontains=name_filter)
 
+    employees = employees.order_by("name")
+    paginator = Paginator(employees, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "employee/list.html",
         {
-            "employees": employees,
+            "employees": page_obj.object_list,
+            "page_obj": page_obj,
             "search_query": search_query,
             "role_filter": role_filter,
             "name_filter": name_filter,

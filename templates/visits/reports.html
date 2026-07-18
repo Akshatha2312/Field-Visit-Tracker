@@ -92,9 +92,9 @@
                                     <td>{{ visit.visit_date }}</td>
                                     <td>
                                         {% if visit.status == 'Completed' %}
-                                            <span class="badge bg-success">Completed</span>
+                                            <span class="badge bg-success-subtle text-success">Completed</span>
                                         {% else %}
-                                            <span class="badge bg-warning text-dark">Pending</span>
+                                            <span class="badge bg-warning-subtle text-warning">Pending</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ visit.location }}</td>

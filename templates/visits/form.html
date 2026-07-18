@@ -3,12 +3,12 @@
 {% block title %}{{ title }} | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
             <div class="card modern-form-card border-0">
-                <div class="card-body p-4 p-md-5">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
                         <div>
                             <h2 class="h4 fw-bold mb-1" style="color: #2F3E46;"><i class="bi bi-pencil-square me-2"></i>{{ title }}</h2>
                             <p class="text-muted mb-0">Update the visit details below.</p>
@@ -17,31 +17,78 @@
 
                     <form method="post" class="form-loading">
                         {% csrf_token %}
-                        <div class="row g-4">
-                            {% for field in form %}
-                                <div class="col-12 {% if field.name in 'client_name client_email visit_date visit_time status' %}col-lg-6{% endif %}">
-                                    <div class="field-group">
-                                        <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
-                                            {% if field.name == 'client_name' %}<i class="bi bi-person"></i>{% endif %}
-                                            {% if field.name == 'client_email' %}<i class="bi bi-envelope"></i>{% endif %}
-                                            {% if field.name == 'visit_date' %}<i class="bi bi-calendar3"></i>{% endif %}
-                                            {% if field.name == 'visit_time' %}<i class="bi bi-clock"></i>{% endif %}
-                                            {% if field.name == 'status' %}<i class="bi bi-flag"></i>{% endif %}
-                                            {% if field.name == 'notes' %}<i class="bi bi-card-text"></i>{% endif %}
-                                            {% if field.name == 'address' %}<i class="bi bi-geo-alt"></i>{% endif %}
-                                            {% if field.name == 'employee' %}<i class="bi bi-person-badge"></i>{% endif %}
-                                            {{ field.label }}
-                                        </label>
-                                        {{ field }}
-                                        {% if field.errors %}
-                                            <div class="validation-message mt-2">{{ field.errors|striptags }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endfor %}
+
+                        <div class="form-section">
+                            <div class="section-title"><i class="bi bi-person-lines-fill me-2"></i>Client details</div>
+                            <div class="row g-3">
+                                {% for field in form %}
+                                    {% if field.name in 'client_name client_email address' %}
+                                        <div class="col-12 col-lg-6">
+                                            <div class="field-group">
+                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
+                                                    {% if field.name == 'client_name' %}<i class="bi bi-person"></i>{% endif %}
+                                                    {% if field.name == 'client_email' %}<i class="bi bi-envelope"></i>{% endif %}
+                                                    {% if field.name == 'address' %}<i class="bi bi-geo-alt"></i>{% endif %}
+                                                    {{ field.label }}
+                                                </label>
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
                         </div>
 
-                        <div class="sticky-actions mt-4">
+                        <div class="form-section">
+                            <div class="section-title"><i class="bi bi-calendar2-week me-2"></i>Visit details</div>
+                            <div class="row g-3">
+                                {% for field in form %}
+                                    {% if field.name in 'visit_date visit_time status employee' %}
+                                        <div class="col-12 col-lg-6">
+                                            <div class="field-group">
+                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
+                                                    {% if field.name == 'visit_date' %}<i class="bi bi-calendar3"></i>{% endif %}
+                                                    {% if field.name == 'visit_time' %}<i class="bi bi-clock"></i>{% endif %}
+                                                    {% if field.name == 'status' %}<i class="bi bi-flag"></i>{% endif %}
+                                                    {% if field.name == 'employee' %}<i class="bi bi-person-badge"></i>{% endif %}
+                                                    {{ field.label }}
+                                                </label>
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-title"><i class="bi bi-card-text me-2"></i>Notes</div>
+                            <div class="row g-3">
+                                {% for field in form %}
+                                    {% if field.name == 'notes' %}
+                                        <div class="col-12">
+                                            <div class="field-group">
+                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
+                                                    <i class="bi bi-card-text"></i>{{ field.label }}
+                                                </label>
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="sticky-actions mt-2">
                             <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-check2-circle me-2"></i><span class="btn-text">Save</span></button>
                             <a href="{% url 'visits:list' %}" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-2"></i>Cancel</a>
                         </div>
@@ -54,29 +101,48 @@
 
 <style>
     .modern-form-card {
-        border-radius: 1.3rem;
-        box-shadow: 0 20px 45px rgba(47, 62, 70, 0.12);
+        border-radius: 1.1rem;
+        box-shadow: 0 14px 35px rgba(47, 62, 70, 0.10);
         border: 1px solid rgba(82, 121, 111, 0.12);
+    }
+
+    .form-section {
+        border: 1px solid #eef3ee;
+        border-radius: 1rem;
+        padding: 1rem 1rem 0.85rem;
+        margin-bottom: 0.9rem;
+        background: linear-gradient(180deg, #fcfefd 0%, #ffffff 100%);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        color: #2F3E46;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
     }
 
     .field-group {
         display: flex;
         flex-direction: column;
-        gap: 0.45rem;
+        gap: 0.4rem;
     }
 
     .field-group .form-label {
         color: #2F3E46;
         font-weight: 600;
+        font-size: 0.92rem;
     }
 
     .field-group .form-control,
     .field-group .form-select,
     .field-group textarea {
-        min-height: 3rem;
-        border-radius: 0.9rem;
+        min-height: 2.9rem;
+        border-radius: 0.8rem;
         border: 1px solid #dfe8de;
-        padding: 0.8rem 0.95rem;
+        padding: 0.72rem 0.9rem;
         background: #fff;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -89,7 +155,7 @@
     }
 
     .field-group textarea {
-        min-height: 7.5rem;
+        min-height: 7rem;
         resize: vertical;
     }
 
@@ -101,9 +167,9 @@
 
     .validation-message {
         color: #b42318;
-        font-size: 0.9rem;
+        font-size: 0.86rem;
         font-weight: 600;
-        padding: 0.35rem 0.5rem;
+        padding: 0.3rem 0.45rem;
         border-radius: 0.6rem;
         background: #fef3f2;
         border: 1px solid #f3c5bf;
@@ -112,18 +178,23 @@
     .sticky-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
-        padding-top: 0.75rem;
+        justify-content: flex-end;
+        gap: 0.7rem;
+        padding-top: 0.7rem;
         border-top: 1px solid #eef3ee;
     }
 
     @media (max-width: 767.98px) {
+        .form-section {
+            padding: 0.9rem 0.85rem 0.75rem;
+        }
+
         .sticky-actions {
-            position: sticky;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.96);
-            padding: 0.9rem 0 0;
-            margin-top: 1rem;
+            justify-content: stretch;
+        }
+
+        .sticky-actions .btn {
+            flex: 1 1 0;
         }
     }
 </style>

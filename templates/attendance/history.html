@@ -72,15 +72,15 @@
                                     <td>{{ attendance.date }}</td>
                                     <td>
                                         {% if attendance.status == 'Present' %}
-                                            <span class="badge bg-success">Present</span>
+                                            <span class="badge bg-success-subtle text-success">Present</span>
                                         {% elif attendance.status == 'Absent' %}
-                                            <span class="badge bg-danger">Absent</span>
+                                            <span class="badge bg-danger-subtle text-danger">Absent</span>
                                         {% elif attendance.status == 'Checked In' %}
-                                            <span class="badge bg-info text-dark">Checked In</span>
+                                            <span class="badge bg-info-subtle text-info">Checked In</span>
                                         {% elif attendance.status == 'Checked Out' %}
-                                            <span class="badge bg-warning text-dark">Checked Out</span>
+                                            <span class="badge bg-warning-subtle text-warning">Checked Out</span>
                                         {% else %}
-                                            <span class="badge bg-secondary">{{ attendance.status }}</span>
+                                            <span class="badge bg-secondary-subtle text-secondary">{{ attendance.status }}</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ attendance.check_in|default:'-' }}</td>

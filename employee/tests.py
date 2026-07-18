@@ -142,6 +142,26 @@ class EmployeeManagementViewTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
+    def test_employee_list_page_displays_pagination_when_more_than_page_size(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+
+        for index in range(11):
+            Employee.objects.create(
+                name=f"Employee {index}",
+                email=f"employee{index}@example.com",
+                password="secret123",
+                role=Employee.Role.EMPLOYEE,
+            )
+
+        response = self.client.get(reverse("employee:list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Previous")
+        self.assertContains(response, "Next")
+        self.assertContains(response, "Page 1")
+        self.assertContains(response, "Page 2")
+
 
 class ProfileViewTests(TestCase):
     def test_profile_update_saves_name_email_and_phone_and_shows_success_message(self):

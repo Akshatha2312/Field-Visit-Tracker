@@ -37,6 +37,9 @@
             background: linear-gradient(135deg, var(--surface-muted) 0%, #dfe8de 100%);
             color: var(--text-primary);
             min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
             transition: background-color 0.2s ease;
         }
 
@@ -90,9 +93,11 @@
         }
 
         main {
-            min-height: calc(100vh - 220px);
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+            flex: 1 0 auto;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
@@ -101,8 +106,8 @@
         }
 
         .container.py-5 {
-            padding-top: 2rem !important;
-            padding-bottom: 2rem !important;
+            padding-top: 1.25rem !important;
+            padding-bottom: 1.25rem !important;
         }
 
         .row.g-4 {
@@ -112,10 +117,10 @@
 
         .card {
             border: 1px solid var(--border-soft);
-            border-radius: 1.1rem;
+            border-radius: 1rem;
             box-shadow: var(--shadow-soft);
             background: var(--surface);
-            transition: box-shadow 0.15s ease;
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
             overflow: hidden;
         }
 
@@ -125,12 +130,13 @@
 
         .card:hover {
             box-shadow: 0 10px 24px rgba(47, 62, 70, 0.1);
+            transform: translateY(-1px);
         }
 
         .btn {
-            border-radius: 0.85rem;
+            border-radius: 0.8rem;
             font-weight: 600;
-            padding: 0.7rem 1.1rem;
+            padding: 0.68rem 1rem;
             transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
             box-shadow: 0 4px 10px rgba(47, 62, 70, 0.08);
             position: relative;
@@ -206,9 +212,12 @@
         }
 
         .footer {
-            background: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.9);
             border-top: 1px solid var(--border-soft);
             color: var(--text-muted);
+            margin-top: auto;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
         }
 
         .text-primary {
@@ -283,6 +292,21 @@
             color: var(--brand-dark);
         }
 
+        .table .badge,
+        .table .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 6.75rem;
+            padding: 0.38rem 0.7rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            line-height: 1;
+            vertical-align: middle;
+            font-weight: 700;
+            font-size: 0.78rem;
+        }
+
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -299,12 +323,14 @@
             white-space: normal;
             word-break: break-word;
             vertical-align: middle;
+            padding-top: 0.8rem;
+            padding-bottom: 0.8rem;
         }
 
         @media (min-width: 768px) {
             main {
-                padding-top: 1.5rem;
-                padding-bottom: 1.5rem;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
             }
 
             .container {
@@ -313,15 +339,15 @@
             }
 
             .container.py-5 {
-                padding-top: 3rem !important;
-                padding-bottom: 3rem !important;
+                padding-top: 1.75rem !important;
+                padding-bottom: 1.75rem !important;
             }
         }
 
         @media (max-width: 767.98px) {
             .container.py-5 {
-                padding-top: 1.25rem !important;
-                padding-bottom: 1.25rem !important;
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
             }
 
             .card-body {

@@ -3,8 +3,8 @@
 {% block title %}Client Visits | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
         <div>
             <h1 class="h3 fw-bold text-primary mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Client Visits</h1>
             <p class="text-muted mb-0">Manage your scheduled visits with a cleaner view of each record.</p>
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <form method="get" class="card modern-card p-3 p-md-4 mb-4">
+    <form method="get" class="card modern-card p-3 p-md-4 mb-3">
         <div class="row g-3 align-items-end">
             <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-person me-2"></i>Client Name</label>
@@ -98,7 +98,7 @@
                 </div>
 
                 {% if page_obj.paginator.num_pages > 1 %}
-                    <nav aria-label="Visit pagination" class="mt-4">
+                    <nav aria-label="Visit pagination" class="mt-3">
                         <ul class="pagination justify-content-center">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
@@ -110,10 +110,10 @@
 
                             {% for page_num in page_obj.paginator.page_range %}
                                 {% if page_num == page_obj.number %}
-                                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                    <li class="page-item active"><span class="page-link">Page {{ page_num }}</span></li>
                                 {% else %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?q={{ search_query|urlencode }}&client_name={{ client_name_filter|urlencode }}&company={{ company_filter|urlencode }}&location={{ location_filter|urlencode }}&employee={{ employee_filter|urlencode }}&status={{ status_filter }}&page={{ page_num }}">{{ page_num }}</a>
+                                        <a class="page-link" href="?q={{ search_query|urlencode }}&client_name={{ client_name_filter|urlencode }}&company={{ company_filter|urlencode }}&location={{ location_filter|urlencode }}&employee={{ employee_filter|urlencode }}&status={{ status_filter }}&page={{ page_num }}">Page {{ page_num }}</a>
                                     </li>
                                 {% endif %}
                             {% endfor %}
@@ -182,13 +182,17 @@
     .status-badge {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.45rem;
-        padding: 0.42rem 0.7rem;
+        min-width: 7rem;
+        padding: 0.42rem 0.72rem;
         border-radius: 999px;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 700;
+        line-height: 1;
         border: 1px solid #dfe8de;
         box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
+        white-space: nowrap;
     }
 
     .status-badge.completed {

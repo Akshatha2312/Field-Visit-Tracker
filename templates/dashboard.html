@@ -3,10 +3,14 @@
 {% block title %}Dashboard | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row g-4 align-items-start mb-4">
-        <div class="col-lg-8">
-            <div class="dashboard-hero card border-0 p-4">
+<div class="container-fluid dashboard-shell-container py-3">
+    <div class="dashboard-shell">
+        <aside class="dashboard-sidebar">
+            {% include 'includes/role_sidebar.html' %}
+        </aside>
+
+        <section class="dashboard-main">
+            <div class="dashboard-hero card border-0 p-3 mb-3">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
                     <div>
                         <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
@@ -17,20 +21,15 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-4">
-            {% include 'includes/role_sidebar.html' %}
-        </div>
-    </div>
 
-    <div class="row g-4 mb-4">
+            <div class="row g-3 mb-3">
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card primary-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-people-fill"></i></div>
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3"><i class="bi bi-person-check"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Total Employees</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.total_employees }}</h3>
+                        <h6 class="text-muted mb-1">Today's Attendance</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.todays_attendance }}</h3>
                     </div>
                 </div>
             </div>
@@ -38,7 +37,7 @@
 
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card info-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
+                <div class="card-body d-flex align-items-center p-3">
                     <div class="stat-icon me-3"><i class="bi bi-calendar2-check"></i></div>
                     <div>
                         <h6 class="text-muted mb-1">Today's Visits</h6>
@@ -50,23 +49,11 @@
 
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card warning-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-bar-chart-line"></i></div>
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3"><i class="bi bi-clock-history"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Monthly Visits</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.monthly_visits }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3">
-            <div class="card dashboard-card stat-card danger-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-graph-up"></i></div>
-                    <div>
-                        <h6 class="text-muted mb-1">Average Attendance</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.average_attendance }}%</h3>
+                        <h6 class="text-muted mb-1">Pending Visits</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.pending_visits }}</h3>
                     </div>
                 </div>
             </div>
@@ -74,47 +61,43 @@
 
         <div class="col-sm-6 col-xl-3">
             <div class="card dashboard-card stat-card success-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-check2-circle"></i></div>
+                <div class="card-body d-flex align-items-center p-3">
+                    <div class="stat-icon me-3"><i class="bi bi-calendar3"></i></div>
                     <div>
-                        <h6 class="text-muted mb-1">Completion Rate</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.completion_rate }}%</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3">
-            <div class="card dashboard-card stat-card subtle-card h-100">
-                <div class="card-body d-flex align-items-center p-4">
-                    <div class="stat-icon me-3"><i class="bi bi-person-check"></i></div>
-                    <div>
-                        <h6 class="text-muted mb-1">Employees Present Today</h6>
-                        <h3 class="fw-bold mb-0">{{ stats.employees_present_today }}</h3>
+                        <h6 class="text-muted mb-1">This Month's Visits</h6>
+                        <h3 class="fw-bold mb-0">{{ stats.monthly_visits }}</h3>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {% if is_admin %}
-        <div class="row g-4 mb-4">
+            {% if is_admin %}
+                <div class="row g-3 mb-3">
             <div class="col-lg-8">
-                <div class="card dashboard-card h-100 p-3">
+                <div class="card dashboard-card activity-card h-100 p-2" id="recent-activity">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title fw-semibold mb-0">Recent Activity</h5>
-                            <span class="badge rounded-pill bg-secondary-subtle text-secondary">Latest 10</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <h5 class="card-title fw-semibold mb-0">Recent Activity</h5>
+                                <div class="small text-muted">Latest updates</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill bg-secondary-subtle text-secondary">Latest 5</span>
+                                {% if recent_activities and recent_activities|length > 5 %}
+                                    <a href="#recent-activity" class="btn btn-sm btn-outline-secondary py-1 px-2">View All</a>
+                                {% endif %}
+                            </div>
                         </div>
                         {% if recent_activities %}
-                            <div class="list-group list-group-flush">
-                                {% for activity in recent_activities %}
-                                    <div class="list-group-item px-0 py-3 d-flex align-items-start gap-3">
+                            <div class="list-group list-group-flush activity-list">
+                                {% for activity in recent_activities|slice:":5" %}
+                                    <div class="list-group-item px-0 py-2 d-flex align-items-start gap-3 activity-item">
                                         <span class="badge {{ activity.badge_class }} rounded-pill p-2"><i class="bi {{ activity.icon_class }}"></i></span>
-                                        <div>
-                                            <div class="fw-semibold">{{ activity.title }}</div>
-                                            <div class="text-muted small">{{ activity.description }}</div>
-                                            <div class="text-muted small mt-1">{{ activity.created_at|date:"M d, Y H:i" }}</div>
+                                        <div class="flex-grow-1 min-w-0">
+                                            <div class="fw-semibold activity-title">{{ activity.title }}</div>
+                                            <div class="text-muted small activity-description">{{ activity.description }}</div>
+                                            <div class="text-muted small mt-1 activity-meta">{{ activity.created_at|date:"M d, Y H:i" }}</div>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -127,11 +110,11 @@
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-3">
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Attendance Overview</h5>
                             <span class="badge rounded-pill bg-primary-subtle text-primary">Pie</span>
                         </div>
@@ -143,9 +126,9 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Monthly Client Visits</h5>
                             <span class="badge rounded-pill bg-success-subtle text-success">Bar</span>
                         </div>
@@ -157,9 +140,9 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Visit Status</h5>
                             <span class="badge rounded-pill bg-warning-subtle text-warning">Doughnut</span>
                         </div>
@@ -171,9 +154,9 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Employee-wise Visits</h5>
                             <span class="badge rounded-pill bg-info-subtle text-info">Horizontal Bar</span>
                         </div>
@@ -185,9 +168,9 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Weekly Attendance Trend</h5>
                             <span class="badge rounded-pill bg-secondary-subtle text-secondary">Line</span>
                         </div>
@@ -199,9 +182,9 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card dashboard-card chart-card h-100 p-3">
+                <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title fw-semibold mb-0">Employee Performance</h5>
                             <span class="badge rounded-pill bg-dark-subtle text-dark">Stacked Bar</span>
                         </div>
@@ -211,28 +194,172 @@
                     </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+                </div>
+            {% endif %}
+        </section>
+    </div>
 </div>
 
 <style>
+    .dashboard-shell-container {
+        max-width: 100%;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .dashboard-shell {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .dashboard-sidebar {
+        width: 280px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 6rem;
+    }
+
+    .dashboard-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dashboard-sidebar-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(248,251,247,0.96) 100%);
+        border: 1px solid var(--border-soft);
+        border-radius: 1.25rem;
+        padding: 1.2rem;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .sidebar-title {
+        font-size: 0.95rem;
+    }
+
+    .sidebar-subtitle {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.72rem 0.82rem;
+        border-radius: 0.9rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .sidebar-nav-link:hover {
+        background: rgba(82, 121, 111, 0.12);
+        color: var(--brand-dark);
+        transform: translateX(3px);
+    }
+
+    .sidebar-nav-link.active {
+        background: linear-gradient(90deg, rgba(82, 121, 111, 0.16) 0%, rgba(132, 169, 140, 0.2) 100%);
+        color: var(--brand-dark);
+        box-shadow: inset 0 0 0 1px rgba(82, 121, 111, 0.12);
+    }
+
+    .sidebar-nav-link-danger {
+        color: #b42318;
+    }
+
+    .sidebar-nav-link-danger:hover {
+        background: rgba(180, 35, 24, 0.1);
+        color: #b42318;
+    }
+
+    .sidebar-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.7rem;
+        height: 1.7rem;
+        border-radius: 0.7rem;
+        background: rgba(82, 121, 111, 0.1);
+        color: var(--brand-primary);
+        flex-shrink: 0;
+    }
+
+    .sidebar-nav-link.active .sidebar-icon {
+        background: rgba(82, 121, 111, 0.18);
+    }
+
     .dashboard-hero {
-        border-radius: 1.2rem;
+        border-radius: 1.1rem;
         background: linear-gradient(135deg, rgba(82, 121, 111, 0.1) 0%, rgba(255, 255, 255, 0.95) 100%);
         border: 1px solid rgba(82, 121, 111, 0.12);
         box-shadow: 0 10px 30px rgba(47, 62, 70, 0.06);
+        padding: 1rem 1.15rem !important;
     }
 
     .dashboard-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.2rem;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        border-radius: 0.95rem;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        min-height: 100%;
     }
 
     .dashboard-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .dashboard-card .card-body {
+        padding: 0.8rem !important;
+    }
+
+    .dashboard-card .list-group-item {
+        padding-top: 0.45rem !important;
+        padding-bottom: 0.45rem !important;
+    }
+
+    .activity-card {
+        min-height: 100%;
+    }
+
+    .activity-list {
+        gap: 0.2rem;
+    }
+
+    .activity-item {
+        gap: 0.7rem;
+    }
+
+    .activity-title {
+        font-size: 0.95rem;
+        line-height: 1.35;
+    }
+
+    .activity-description {
+        line-height: 1.4;
+    }
+
+    .activity-meta {
+        font-size: 0.78rem;
     }
 
     .stat-card {
@@ -264,31 +391,51 @@
     }
 
     .stat-icon {
-        font-size: 1.65rem;
+        font-size: 1.35rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.9rem;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.8rem;
         background: rgba(255,255,255,0.75);
         box-shadow: inset 0 0 0 1px rgba(148,163,184,0.18);
     }
 
     .chart-shell {
-        min-height: 280px;
-        height: clamp(260px, 34vh, 340px);
+        min-height: 180px;
+        height: clamp(180px, 22vh, 220px);
         width: 100%;
         position: relative;
+        padding: 0.2rem 0;
     }
 
     .chart-card .card-title {
         color: #0f172a;
     }
 
+    @media (max-width: 991.98px) {
+        .dashboard-shell {
+            flex-direction: column;
+        }
+
+        .dashboard-sidebar {
+            width: 100%;
+            position: static;
+        }
+    }
+
     @media (max-width: 767.98px) {
         .chart-shell {
-            height: 260px;
+            height: 200px;
+        }
+
+        .dashboard-sidebar-card {
+            padding: 1rem;
+        }
+
+        .dashboard-hero {
+            padding: 0.9rem 0.95rem !important;
         }
     }
 </style>

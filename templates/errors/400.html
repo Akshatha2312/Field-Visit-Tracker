@@ -11,7 +11,7 @@
                     <div class="error-icon mb-3">⚠️</div>
                     <h1 class="display-6 fw-bold text-danger">400</h1>
                     <h2 class="h4 fw-bold mb-3">Invalid request</h2>
-                    <p class="text-muted mb-4">The request could not be processed because the supplied parameters were invalid.</p>
+                    <p class="text-muted mb-4">The request could not be processed because the supplied parameters were invalid. Please review the information and try again.</p>
                     <a href="{% if request.user.is_authenticated %}{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-primary btn-lg">Back to dashboard</a>
                 </div>
             </div>
@@ -23,6 +23,7 @@
     .modern-card {
         border-radius: 1.2rem;
         box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        border: 1px solid #e2e8f0;
     }
     .error-icon {
         width: 3.2rem;
