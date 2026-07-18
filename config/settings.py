@@ -29,6 +29,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "field-visit-tracker-cmoq.onrender.com",
 ]
 
 # Application definition
