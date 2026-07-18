@@ -1,0 +1,16 @@
+Welcome to Field Visit Tracker
+
+Hello {{ employee_name }},
+
+Your employee account has been created successfully.
+
+Employee Name: {{ employee_name }}
+Username: {{ username }}
+Temporary Login Password: {{ temporary_password }}
+Assigned Role: {{ role }}
+Login URL: {{ login_url }}
+
+Please log in and change your password after your first sign-in.
+
+Regards,
+Field Visit Tracker

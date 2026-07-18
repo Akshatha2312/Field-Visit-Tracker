@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
+from django.utils.dateparse import parse_date
 from django.utils import timezone
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
@@ -58,6 +59,19 @@ def _build_attendance_calendar(employee, year, month):
     return weeks
 
 
+def _reject_non_today_attendance_request(request, today):
+    requested_date_value = request.POST.get("date") or request.GET.get("date")
+    if not requested_date_value:
+        return None
+
+    requested_date = parse_date(requested_date_value)
+    if requested_date != today:
+        messages.error(request, "Attendance can only be recorded for today.")
+        return redirect("attendance:dashboard")
+
+    return None
+
+
 @login_required(login_url="login")
 def attendance_dashboard(request):
     employee = get_employee_for_user(request.user)
@@ -97,7 +111,7 @@ def attendance_management(request):
     if status_filter:
         attendances_qs = attendances_qs.filter(status=status_filter)
 
-    paginator = Paginator(attendances_qs, 20)
+    paginator = Paginator(attendances_qs, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -123,6 +137,10 @@ def check_in(request):
 
     if request.method == "POST":
         today = timezone.localdate()
+        rejected_response = _reject_non_today_attendance_request(request, today)
+        if rejected_response is not None:
+            return rejected_response
+
         if Attendance.objects.filter(employee=employee, date=today).exists():
             messages.warning(request, "You have already checked in today.")
             return redirect("attendance:dashboard")
@@ -157,6 +175,10 @@ def check_out(request):
     attendance = Attendance.objects.filter(employee=employee, date=today).first()
 
     if request.method == "POST":
+        rejected_response = _reject_non_today_attendance_request(request, today)
+        if rejected_response is not None:
+            return rejected_response
+
         if attendance is None:
             messages.warning(request, "You need to check in before checking out.")
             return redirect("attendance:dashboard")

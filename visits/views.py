@@ -53,7 +53,7 @@ def visit_list(request):
         queryset = queryset.filter(status=status_filter)
 
     visits_list = queryset.select_related("employee").order_by("-visit_date", "-created_at")
-    paginator = Paginator(visits_list, 10)
+    paginator = Paginator(visits_list, 8)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     today = timezone.localdate()

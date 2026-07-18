@@ -1,12 +1,17 @@
-from datetime import date
+from datetime import date, datetime, timezone as dt_timezone
+from unittest.mock import patch
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
+from django.utils import timezone
 from django.test import TestCase
 from django.urls import reverse
 
 from employee.models import Employee
 
 from .models import Attendance
+from .utils import send_checkin_email, send_checkout_email
 
 
 class AttendanceModelTests(TestCase):
@@ -59,6 +64,30 @@ class AttendanceViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Attendance.objects.filter(employee=self.employee).count(), 1)
 
+    def test_check_in_rejects_non_today_date(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("attendance:check_in"), {"date": "2026-07-16"})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Attendance.objects.filter(employee=self.employee).count(), 0)
+
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("Attendance can only be recorded for today.", messages)
+
+    def test_check_out_rejects_non_today_date(self):
+        self.client.force_login(self.user)
+        self.client.post(reverse("attendance:check_in"))
+
+        response = self.client.post(reverse("attendance:check_out"), {"date": "2026-07-16"})
+
+        self.assertEqual(response.status_code, 302)
+        attendance = Attendance.objects.get(employee=self.employee)
+        self.assertIsNone(attendance.check_out)
+
+        messages = [message.message for message in get_messages(response.wsgi_request)]
+        self.assertIn("Attendance can only be recorded for today.", messages)
+
     def test_check_out_updates_existing_attendance(self):
         self.client.force_login(self.user)
         self.client.post(reverse("attendance:check_in"))
@@ -97,3 +126,49 @@ class AttendanceViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("attendance:dashboard"))
+
+
+class AttendanceEmailTests(TestCase):
+    def setUp(self):
+        self.employee = Employee.objects.create(
+            name="Jane Doe",
+            email="jane@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+
+    @patch("attendance.utils.send_mail")
+    def test_check_in_email_uses_ist_display_time(self, mock_send_mail):
+        attendance = Attendance(
+            employee=self.employee,
+            date=date(2026, 7, 18),
+            check_in=datetime(2026, 7, 18, 0, 0, tzinfo=dt_timezone.utc),
+            status=Attendance.Status.CHECKED_IN,
+        )
+
+        send_checkin_email(self.employee, attendance)
+
+        subject, message, from_email, recipient_list = mock_send_mail.call_args.args
+        self.assertEqual(subject, "Check In Successful")
+        self.assertIn("Check-in date: 2026-07-18", message)
+        self.assertIn("Check-in time: 05:30:00", message)
+        self.assertEqual(from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(recipient_list, [self.employee.email])
+
+    @patch("attendance.utils.send_mail")
+    def test_check_out_email_uses_ist_display_time(self, mock_send_mail):
+        attendance = Attendance(
+            employee=self.employee,
+            date=date(2026, 7, 18),
+            check_out=datetime(2026, 7, 18, 12, 0, tzinfo=dt_timezone.utc),
+            status=Attendance.Status.CHECKED_OUT,
+        )
+
+        send_checkout_email(self.employee, attendance)
+
+        subject, message, from_email, recipient_list = mock_send_mail.call_args.args
+        self.assertEqual(subject, "Check Out Successful")
+        self.assertIn("Check-out date: 2026-07-18", message)
+        self.assertIn("Check-out time: 17:30:00", message)
+        self.assertEqual(from_email, settings.DEFAULT_FROM_EMAIL)
+        self.assertEqual(recipient_list, [self.employee.email])

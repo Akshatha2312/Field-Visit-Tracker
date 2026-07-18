@@ -3,6 +3,7 @@ from calendar import month_name
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -56,14 +57,20 @@ def _build_dashboard_context(request):
         'employees_present_today': attendance_aggs['today_present'],
     }
     recent_activities_qs = ActivityLog.objects.select_related('employee').order_by('-created_at')
+    recent_activity_count = recent_activities_qs.count()
     if activity_page == 'all':
-        recent_activities = list(recent_activities_qs)
+        paginator = Paginator(recent_activities_qs, 10)
+        activity_page_obj = paginator.get_page(request.GET.get('page'))
+        recent_activities = []
     else:
         recent_activities = list(recent_activities_qs[:5])
+        activity_page_obj = None
 
     return {
         'stats': stats,
         'recent_activities': recent_activities,
+        'recent_activity_count': recent_activity_count,
+        'activity_page_obj': activity_page_obj,
         'is_admin': is_admin_user(request.user),
         'activity_page': activity_page,
     }

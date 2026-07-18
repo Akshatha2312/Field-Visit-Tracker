@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -5,13 +7,16 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from .forms import EmployeeProfileForm
 from .models import Employee
 from .permissions import admin_required, is_admin_user
 from .serializers import EmployeeSerializer
-from .utils import get_employee_for_user
+from .utils import get_employee_for_user, send_employee_welcome_email
+
+logger = logging.getLogger(__name__)
 
 
 @login_required(login_url="login")
@@ -51,7 +56,7 @@ def employee_list_view(request):
         employees = employees.filter(name__icontains=name_filter)
 
     employees = employees.order_by("name")
-    paginator = Paginator(employees, 10)
+    paginator = Paginator(employees, 8)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -98,6 +103,20 @@ def employee_create_view(request):
             role=form_data.get("role", Employee.Role.EMPLOYEE),
         )
         messages.success(request, "Employee created successfully.")
+
+        try:
+            send_employee_welcome_email(
+                employee,
+                password,
+                request.build_absolute_uri(reverse("login")),
+            )
+        except Exception:
+            logger.exception("Failed to send welcome email for employee %s", employee.email)
+            messages.warning(
+                request,
+                "Employee was created successfully, but the welcome email could not be sent.",
+            )
+
         return redirect("employee:list")
 
     return render(request, "employee/form.html", {"title": "Add Employee"})

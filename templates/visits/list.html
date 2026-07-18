@@ -3,8 +3,8 @@
 {% block title %}Client Visits | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-3 compact-page">
-    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-3">
+<div class="container py-2 compact-page">
+    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
         <div>
             <h1 class="h3 fw-bold text-primary mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Client Visits</h1>
             <p class="text-muted mb-0">Manage your scheduled visits with a cleaner view of each record.</p>
@@ -15,8 +15,8 @@
         </div>
     </div>
 
-    <form method="get" class="card modern-card p-3 p-md-4 mb-3">
-        <div class="row g-3 align-items-end">
+    <form method="get" class="card modern-card p-2 p-md-3 mb-2">
+        <div class="row g-2 align-items-end">
             <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-person me-2"></i>Client Name</label>
                 <input type="text" name="client_name" class="form-control" value="{{ client_name_filter }}" placeholder="Client name">
@@ -51,7 +51,7 @@
         <div class="card-body p-2 p-md-3">
             {% if visits %}
                 <div class="table-responsive rounded-3">
-                    <table class="table table-hover align-middle visits-table mb-0">
+                    <table class="table table-hover table-sm align-middle visits-table mb-0">
                         <thead>
                             <tr>
                                 <th>Client</th>
@@ -69,7 +69,7 @@
                                         <div class="fw-semibold text-primary">{{ visit.client_name }}</div>
                                     </td>
                                     <td>{{ visit.company_name }}</td>
-                                    <td class="visit-date-cell">{{ visit.visit_date }}</td>
+                                    <td class="visit-date-cell text-nowrap">{{ visit.visit_date }}</td>
                                     <td>
                                         {% if visit.status == 'Completed' %}
                                             <span class="status-badge completed"><span class="dot"></span>Completed</span>
@@ -97,8 +97,8 @@
                     </table>
                 </div>
 
-                {% if page_obj.paginator.num_pages > 1 %}
-                    <nav aria-label="Visit pagination" class="mt-3">
+                <nav aria-label="Visit pagination" class="mt-3">
+                    {% if page_obj.paginator.num_pages > 1 %}
                         <ul class="pagination justify-content-center">
                             {% if page_obj.has_previous %}
                                 <li class="page-item">
@@ -126,8 +126,14 @@
                                 <li class="page-item disabled"><span class="page-link">Next</span></li>
                             {% endif %}
                         </ul>
-                    </nav>
-                {% endif %}
+                    {% else %}
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                            <li class="page-item active"><span class="page-link">Page 1</span></li>
+                            <li class="page-item disabled"><span class="page-link">Next</span></li>
+                        </ul>
+                    {% endif %}
+                </nav>
             {% else %}
                 <div class="empty-state text-center">
                     <div class="empty-icon"><i class="bi bi-geo-alt"></i></div>
@@ -141,12 +147,19 @@
 
 <style>
     .compact-page {
-        padding-top: 0.75rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }
 
     .visit-date-cell {
         white-space: nowrap;
+        word-break: normal;
+    }
+
+    .visits-table td.visit-date-cell,
+    .visits-table th.visit-date-cell {
+        white-space: nowrap;
+        word-break: normal;
     }
 
     .modern-card {
@@ -166,7 +179,7 @@
         color: #354F52;
         font-weight: 700;
         border-bottom: 1px solid #dfe8de;
-        padding: 0.9rem 1rem;
+        padding: 0.75rem 0.85rem;
         font-size: 0.78rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -184,7 +197,7 @@
     }
 
     .visits-table td {
-        padding: 0.9rem 1rem;
+        padding: 0.75rem 0.85rem;
         border-top: 1px solid #f0f4ef;
     }
 
@@ -232,7 +245,7 @@
     .action-group .btn {
         transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
         border-radius: 0.75rem;
-        padding: 0.45rem 0.7rem;
+        padding: 0.35rem 0.55rem;
         white-space: nowrap;
     }
 

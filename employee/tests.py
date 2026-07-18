@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -60,21 +61,46 @@ class EmployeeManagementViewTests(TestCase):
         self._create_admin_user()
         self.client.login(username="admin_emp", password="strongpass123")
 
-        response = self.client.post(
-            reverse("employee:create"),
-            {
-                "username": "newemployee",
-                "name": "New Employee",
-                "email": "newemployee@example.com",
-                "phone_number": "9876543210",
-                "role": Employee.Role.EMPLOYEE,
-                "password": "newpass123",
-            },
-        )
+        with patch("employee.views.send_employee_welcome_email") as mock_send_email:
+            response = self.client.post(
+                reverse("employee:create"),
+                {
+                    "username": "newemployee",
+                    "name": "New Employee",
+                    "email": "newemployee@example.com",
+                    "phone_number": "9876543210",
+                    "role": Employee.Role.EMPLOYEE,
+                    "password": "newpass123",
+                },
+            )
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Employee.objects.filter(email="newemployee@example.com").exists())
         self.assertTrue(get_user_model().objects.filter(username="newemployee").exists())
+        mock_send_email.assert_called_once()
+
+    def test_admin_can_create_employee_even_if_welcome_email_fails(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+
+        with patch("employee.views.send_employee_welcome_email", side_effect=Exception("SMTP failed")):
+            response = self.client.post(
+                reverse("employee:create"),
+                {
+                    "username": "newemployee2",
+                    "name": "New Employee 2",
+                    "email": "newemployee2@example.com",
+                    "phone_number": "9876543210",
+                    "role": Employee.Role.EMPLOYEE,
+                    "password": "newpass123",
+                },
+                follow=True,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Employee.objects.filter(email="newemployee2@example.com").exists())
+        self.assertContains(response, "Employee created successfully.")
+        self.assertContains(response, "welcome email could not be sent")
 
     def test_admin_can_edit_employee(self):
         self._create_admin_user()

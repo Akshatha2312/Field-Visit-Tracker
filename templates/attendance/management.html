@@ -3,8 +3,8 @@
 {% block title %}Attendance Management | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-3 compact-page">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+<div class="container py-2 compact-page">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
         <div>
             <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-calendar2-week me-2"></i>Attendance Management</h1>
             <p class="text-muted mb-0">Overview of attendance across all employees.</p>
@@ -13,8 +13,8 @@
     </div>
 
     <div class="card modern-card">
-        <div class="card-body p-3 p-md-4">
-            <form method="get" class="row g-3 align-items-end">
+        <div class="card-body p-2 p-md-3">
+            <form method="get" class="row g-2 align-items-end">
                 <div class="col-md-4">
                     <label for="q" class="form-label"><i class="bi bi-search me-2"></i>Search Employee</label>
                     <input type="text" class="form-control" id="q" name="q" value="{{ search_query }}" placeholder="Search by employee name">
@@ -39,9 +39,9 @@
                 </div>
             </form>
 
-            <div class="table-responsive mt-4">
+            <div class="table-responsive mt-3">
                 {% if attendances %}
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover table-sm align-middle mb-0 attendance-table">
                         <thead>
                             <tr>
                                 <th>Employee</th>
@@ -109,14 +109,20 @@
 
 <style>
     .compact-page {
-        padding-top: 0.75rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }
 
     .modern-card {
         border: 1px solid #e2e8f0;
         border-radius: 1.1rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+    }
+
+    .attendance-table th,
+    .attendance-table td {
+        padding-top: 0.7rem;
+        padding-bottom: 0.7rem;
     }
 </style>
 {% endblock %}

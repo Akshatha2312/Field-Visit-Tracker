@@ -6,8 +6,8 @@
     <title>{% block title %}Field Visit Tracker{% endblock %}</title>
 
     {% load static %}
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}?v=2">
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}?v=2">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}?v=20260718" sizes="any">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}?v=20260718">
     <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,6 +41,7 @@
             display: flex;
             flex-direction: column;
             transition: background-color 0.2s ease;
+            overflow-x: hidden;
         }
 
         a {
@@ -92,22 +93,65 @@
             transform: translateY(-1px);
         }
 
+        .navbar .container {
+            flex-wrap: wrap;
+            gap: 0.75rem 1rem;
+        }
+
+        .navbar .d-flex.align-items-center.gap-3 {
+            margin-left: auto;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 0.5rem !important;
+        }
+
         main {
             flex: 1 0 auto;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
+            padding-top: 0.45rem;
+            padding-bottom: 0.45rem;
             display: flex;
             flex-direction: column;
         }
 
+        main > .container,
+        main > .container-fluid {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-width: 0;
+        }
+
         .container {
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 0.9rem;
+            padding-right: 0.9rem;
+        }
+
+        @media (min-width: 1200px) {
+            .container,
+            .container-sm,
+            .container-md,
+            .container-lg,
+            .container-xl,
+            .container-xxl {
+                max-width: min(96vw, 1480px);
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .container,
+            .container-sm,
+            .container-md,
+            .container-lg,
+            .container-xl,
+            .container-xxl {
+                max-width: min(94vw, 1600px);
+            }
         }
 
         .container.py-5 {
-            padding-top: 1.25rem !important;
-            padding-bottom: 1.25rem !important;
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
         }
 
         .row.g-4 {
@@ -216,8 +260,8 @@
             border-top: 1px solid var(--border-soft);
             color: var(--text-muted);
             margin-top: auto;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+            padding-top: 0.85rem;
+            padding-bottom: 0.85rem;
         }
 
         .text-primary {
@@ -313,6 +357,11 @@
             border-radius: 0.9rem;
         }
 
+        .table-responsive > .table {
+            width: max-content;
+            min-width: 100%;
+        }
+
         .table {
             min-width: 100%;
             margin-bottom: 0;
@@ -320,8 +369,8 @@
 
         .table th,
         .table td {
-            white-space: normal;
-            word-break: break-word;
+            white-space: nowrap;
+            word-break: normal;
             vertical-align: middle;
             padding-top: 0.8rem;
             padding-bottom: 0.8rem;
@@ -329,25 +378,25 @@
 
         @media (min-width: 768px) {
             main {
-                padding-top: 1rem;
-                padding-bottom: 1rem;
+                padding-top: 0.6rem;
+                padding-bottom: 0.6rem;
             }
 
             .container {
-                padding-left: 1.25rem;
-                padding-right: 1.25rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
 
             .container.py-5 {
-                padding-top: 1.75rem !important;
-                padding-bottom: 1.75rem !important;
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
             }
         }
 
         @media (max-width: 767.98px) {
             .container.py-5 {
-                padding-top: 1rem !important;
-                padding-bottom: 1rem !important;
+                padding-top: 0.85rem !important;
+                padding-bottom: 0.85rem !important;
             }
 
             .card-body {
@@ -357,6 +406,12 @@
             .navbar .container {
                 padding-left: 1rem;
                 padding-right: 1rem;
+            }
+
+            .navbar .d-flex.align-items-center.gap-3 {
+                width: 100%;
+                margin-left: 0;
+                justify-content: flex-start;
             }
 
             .table {
@@ -392,7 +447,7 @@
             {% if user.is_authenticated %}
                 {% if user.is_staff or user.is_superuser %}
                     <a class="nav-link" href="{% if user.is_staff or user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
-                {% else %}
+                {% elif request.path != '/employee-dashboard/' %}
                     <a class="nav-link" href="{% url 'attendance:dashboard' %}"><i class="bi bi-calendar-check me-1"></i>My Attendance</a>
                 {% endif %}
                 <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
@@ -451,10 +506,9 @@
     {% endblock %}
 </main>
 
-<footer class="footer py-4 mt-5">
+<footer class="footer py-4">
     <div class="container text-center small">
         <div>© 2026 Field Visit Tracker</div>
-        <div class="mt-1">Employee Visit Management System</div>
         <div class="mt-1">All Rights Reserved</div>
     </div>
 </footer>

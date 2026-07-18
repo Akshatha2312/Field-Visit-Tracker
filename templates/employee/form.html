@@ -3,8 +3,8 @@
 {% block title %}{{ title }} | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-3 compact-page">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+<div class="container py-2 compact-page">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
         <div>
             <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-person-plus me-2"></i>{{ title }}</h1>
             <p class="text-muted mb-0">Create or update an employee record.</p>
@@ -13,8 +13,8 @@
     </div>
 
     <div class="card modern-card">
-        <div class="card-body p-3 p-md-4">
-            <form method="post" class="row g-4">
+        <div class="card-body p-2 p-md-3">
+            <form method="post" class="row g-3">
                 {% csrf_token %}
                 <div class="col-md-6">
                     <label for="username" class="form-label fw-semibold">Username</label>
@@ -53,8 +53,8 @@
 
 <style>
     .compact-page {
-        padding-top: 0.75rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }
 
     .modern-card {
@@ -71,10 +71,10 @@
 
     .form-control,
     .form-select {
-        min-height: 3rem;
+        min-height: 2.7rem;
         border-radius: 0.9rem;
         border: 1px solid #dfe8de;
-        padding: 0.8rem 0.95rem;
+        padding: 0.65rem 0.9rem;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 

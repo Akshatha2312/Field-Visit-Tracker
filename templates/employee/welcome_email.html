@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Field Visit Tracker</title>
+</head>
+<body style="margin:0; padding:0; background:#eef4ef; font-family: Arial, Helvetica, sans-serif; color:#2F3E46;">
+    <div style="max-width:640px; margin:0 auto; padding:24px;">
+        <div style="background:#ffffff; border:1px solid #dfe8de; border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(47,62,70,0.08);">
+            <div style="background:linear-gradient(90deg, #52796F 0%, #84A98C 100%); color:#ffffff; padding:24px 28px;">
+                <div style="font-size:20px; font-weight:700; margin-bottom:6px;">Welcome to Field Visit Tracker</div>
+                <div style="font-size:14px; opacity:0.95;">Your employee account is ready</div>
+            </div>
+            <div style="padding:28px; font-size:14px; line-height:1.6;">
+                <p style="margin:0 0 16px;">Hello {{ employee_name }},</p>
+                <p style="margin:0 0 18px;">An employee account has been created for you in Field Visit Tracker. Use the details below to log in for the first time.</p>
+
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse; margin:0 0 20px;">
+                    <tr>
+                        <td style="padding:10px 0; font-weight:700; width:42%;">Employee Name</td>
+                        <td style="padding:10px 0;">{{ employee_name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; font-weight:700;">Username</td>
+                        <td style="padding:10px 0;">{{ username }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; font-weight:700;">Temporary Login Password</td>
+                        <td style="padding:10px 0;">{{ temporary_password }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; font-weight:700;">Assigned Role</td>
+                        <td style="padding:10px 0;">{{ role }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 0; font-weight:700;">Login URL</td>
+                        <td style="padding:10px 0;"><a href="{{ login_url }}" style="color:#52796F; word-break:break-all;">{{ login_url }}</a></td>
+                    </tr>
+                </table>
+
+                <p style="margin:0 0 16px;">Please sign in and change your password after your first login.</p>
+                <p style="margin:0;">Regards,<br>Field Visit Tracker</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -3,12 +3,12 @@
 {% block title %}{{ title }} | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-3 compact-page">
+<div class="container py-2 compact-page">
     <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
+        <div class="col-12 col-xl-11">
             <div class="card modern-form-card border-0">
                 <div class="card-body p-2 p-md-3">
-                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
+                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
                         <div>
                             <h2 class="h4 fw-bold mb-1" style="color: #2F3E46;"><i class="bi bi-pencil-square me-2"></i>{{ title }}</h2>
                             <p class="text-muted mb-0">Update the visit details below.</p>
@@ -21,70 +21,92 @@
                         <div class="form-section">
                             <div class="section-title"><i class="bi bi-person-lines-fill me-2"></i>Client details</div>
                             <div class="row g-3">
-                                {% for field in form %}
-                                    {% if field.name in 'client_name client_email address' %}
-                                        <div class="col-12 col-lg-6">
-                                            <div class="field-group">
-                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
-                                                    {% if field.name == 'client_name' %}<i class="bi bi-person"></i>{% endif %}
-                                                    {% if field.name == 'client_email' %}<i class="bi bi-envelope"></i>{% endif %}
-                                                    {% if field.name == 'address' %}<i class="bi bi-geo-alt"></i>{% endif %}
-                                                    {{ field.label }}
-                                                </label>
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.client_name.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-person"></i>{{ form.client_name.label }}</label>
+                                        {{ form.client_name }}
+                                        {% if form.client_name.errors %}
+                                            <div class="validation-message">{{ form.client_name.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.company_name.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-building"></i>{{ form.company_name.label }}</label>
+                                        {{ form.company_name }}
+                                        {% if form.company_name.errors %}
+                                            <div class="validation-message">{{ form.company_name.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.contact_number.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-telephone"></i>{{ form.contact_number.label }}</label>
+                                        {{ form.contact_number }}
+                                        {% if form.contact_number.errors %}
+                                            <div class="validation-message">{{ form.contact_number.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.location.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-geo-alt"></i>{{ form.location.label }}</label>
+                                        {{ form.location }}
+                                        {% if form.location.errors %}
+                                            <div class="validation-message">{{ form.location.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-section">
                             <div class="section-title"><i class="bi bi-calendar2-week me-2"></i>Visit details</div>
                             <div class="row g-3">
-                                {% for field in form %}
-                                    {% if field.name in 'visit_date visit_time status employee' %}
-                                        <div class="col-12 col-lg-6">
-                                            <div class="field-group">
-                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
-                                                    {% if field.name == 'visit_date' %}<i class="bi bi-calendar3"></i>{% endif %}
-                                                    {% if field.name == 'visit_time' %}<i class="bi bi-clock"></i>{% endif %}
-                                                    {% if field.name == 'status' %}<i class="bi bi-flag"></i>{% endif %}
-                                                    {% if field.name == 'employee' %}<i class="bi bi-person-badge"></i>{% endif %}
-                                                    {{ field.label }}
-                                                </label>
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.visit_date.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-calendar3"></i>{{ form.visit_date.label }}</label>
+                                        {{ form.visit_date }}
+                                        {% if form.visit_date.errors %}
+                                            <div class="validation-message">{{ form.visit_date.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="field-group">
+                                        <label for="{{ form.status.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-flag"></i>{{ form.status.label }}</label>
+                                        {{ form.status }}
+                                        {% if form.status.errors %}
+                                            <div class="validation-message">{{ form.status.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="field-group">
+                                        <label for="{{ form.purpose.id_for_label }}" class="form-label d-flex align-items-center gap-2"><i class="bi bi-chat-left-text"></i>{{ form.purpose.label }}</label>
+                                        {{ form.purpose }}
+                                        {% if form.purpose.errors %}
+                                            <div class="validation-message">{{ form.purpose.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-section">
                             <div class="section-title"><i class="bi bi-card-text me-2"></i>Notes</div>
                             <div class="row g-3">
-                                {% for field in form %}
-                                    {% if field.name == 'meeting_notes' %}
-                                        <div class="col-12">
-                                            <div class="field-group">
-                                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
-                                                    <i class="bi bi-card-text"></i>{{ field.label }}
-                                                </label>
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <div class="validation-message">{{ field.errors|striptags }}</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
+                                <div class="col-12">
+                                    <div class="field-group">
+                                        <label for="{{ form.meeting_notes.id_for_label }}" class="form-label d-flex align-items-center gap-2">
+                                            <i class="bi bi-card-text"></i>{{ form.meeting_notes.label }}
+                                        </label>
+                                        {{ form.meeting_notes }}
+                                        {% if form.meeting_notes.errors %}
+                                            <div class="validation-message">{{ form.meeting_notes.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -101,8 +123,8 @@
 
 <style>
     .compact-page {
-        padding-top: 0.75rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
     }
 
     .modern-form-card {
@@ -114,8 +136,8 @@
     .form-section {
         border: 1px solid #eef3ee;
         border-radius: 1rem;
-        padding: 1rem 1rem 0.85rem;
-        margin-bottom: 0.9rem;
+        padding: 0.75rem 0.85rem 0.6rem;
+        margin-bottom: 0.55rem;
         background: linear-gradient(180deg, #fcfefd 0%, #ffffff 100%);
     }
 
@@ -124,7 +146,7 @@
         align-items: center;
         color: #2F3E46;
         font-weight: 700;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.45rem;
         font-size: 0.95rem;
         letter-spacing: 0.01em;
     }
@@ -132,22 +154,22 @@
     .field-group {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
+        gap: 0.3rem;
     }
 
     .field-group .form-label {
         color: #2F3E46;
         font-weight: 600;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
     .field-group .form-control,
     .field-group .form-select,
     .field-group textarea {
-        min-height: 2.9rem;
+        min-height: 2.45rem;
         border-radius: 0.8rem;
         border: 1px solid #dfe8de;
-        padding: 0.72rem 0.9rem;
+        padding: 0.55rem 0.82rem;
         background: #fff;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
@@ -160,7 +182,7 @@
     }
 
     .field-group textarea {
-        min-height: 6rem;
+        min-height: 4.1rem;
         resize: vertical;
     }
 
@@ -185,7 +207,7 @@
         flex-wrap: wrap;
         justify-content: flex-end;
         gap: 0.7rem;
-        padding-top: 0.7rem;
+        padding-top: 0.4rem;
         border-top: 1px solid #eef3ee;
     }
 
