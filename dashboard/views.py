@@ -20,6 +20,7 @@ from .models import ActivityLog
 def _build_dashboard_context(request):
     today = timezone.localdate()
     current_month = today.month
+    activity_page = request.GET.get('activity_page', '').strip().lower()
 
     employee_count = Employee.objects.count()
 
@@ -54,11 +55,17 @@ def _build_dashboard_context(request):
         ) if total_visits else 0,
         'employees_present_today': attendance_aggs['today_present'],
     }
-    recent_activities = ActivityLog.objects.select_related('employee').order_by('-created_at')[:10]
+    recent_activities_qs = ActivityLog.objects.select_related('employee').order_by('-created_at')
+    if activity_page == 'all':
+        recent_activities = list(recent_activities_qs)
+    else:
+        recent_activities = list(recent_activities_qs[:5])
+
     return {
         'stats': stats,
         'recent_activities': recent_activities,
         'is_admin': is_admin_user(request.user),
+        'activity_page': activity_page,
     }
 
 
