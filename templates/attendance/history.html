@@ -3,19 +3,19 @@
 {% block title %}Attendance History | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+<div class="container page-shell">
+    <div class="page-header">
         <div>
-            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-clock-history me-2"></i>Attendance History</h1>
-            <p class="text-muted mb-0">Your previous attendance records.</p>
+            <h1 class="page-title"><i class="bi bi-clock-history me-2"></i>Attendance History</h1>
+            <p class="page-subtitle">Your previous attendance records.</p>
         </div>
         <a href="{% url 'attendance:dashboard' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
     </div>
 
     <div class="row g-4 mb-4">
         <div class="col-lg-7">
-            <div class="card modern-card h-100">
-                <div class="card-body p-4">
+            <div class="card page-card h-100">
+                <div class="card-body">
                     <h5 class="card-title fw-semibold mb-3">Filter History</h5>
                     <form method="get" class="row g-3 align-items-end">
                         <div class="col-md-6">
@@ -41,8 +41,8 @@
             </div>
         </div>
         <div class="col-lg-5">
-            <div class="card modern-card h-100 border-0 bg-primary-subtle">
-                <div class="card-body p-4 d-flex align-items-center">
+            <div class="card page-card h-100 border-0 bg-primary-subtle">
+                <div class="card-body d-flex align-items-center">
                     <div class="me-3 fs-2">🗓️</div>
                     <div>
                         <h6 class="text-muted mb-1">Showing Records</h6>
@@ -53,8 +53,8 @@
         </div>
     </div>
 
-    <div class="card modern-card">
-        <div class="card-body p-4">
+    <div class="card page-card">
+        <div class="card-body">
             {% if attendances %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -134,9 +134,9 @@
 </div>
 
 <style>
-    .modern-card {
+    .page-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.1rem;
+        border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
     }
 </style>

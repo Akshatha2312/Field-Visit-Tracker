@@ -3,22 +3,20 @@
 {% block title %}Dashboard | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container-fluid dashboard-shell-container py-3">
+<div class="container-fluid dashboard-shell-container page-shell">
     <div class="dashboard-shell">
         <aside class="dashboard-sidebar">
             {% include 'includes/role_sidebar.html' %}
         </aside>
 
         <section class="dashboard-main">
-            <div class="dashboard-hero card border-0 p-3 mb-3">
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div class="dashboard-hero card border-0 mb-3">
+                <div class="page-header mb-0">
                     <div>
-                        <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
-                        <p class="text-muted mb-0">Welcome back, {{ request.user.username }}.</p>
+                        <h1 class="page-title mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
+                        <p class="page-subtitle">Welcome back, {{ request.user.username }}.</p>
                     </div>
-                    <div class="text-end">
-                        <div class="small text-muted">{# Keep the existing dashboard context intact #}</div>
-                    </div>
+                    <div class="text-end small text-muted">{# Keep the existing dashboard context intact #}</div>
                 </div>
             </div>
 
@@ -75,7 +73,7 @@
             {% if is_admin %}
                 <div class="row g-3 mb-3">
             <div class="col-lg-8">
-                <div class="card dashboard-card activity-card h-100 p-2" id="recent-activity">
+                <div class="card dashboard-card activity-card h-100" id="recent-activity">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
@@ -155,7 +153,7 @@
             </div>
         </div>
 
-        <div class="row g-3">
+        <div id="dashboardCharts" class="row g-3">
             <div class="col-lg-6">
                 <div class="card dashboard-card chart-card h-100 p-2">
                     <div class="card-body d-flex flex-column">
@@ -248,14 +246,14 @@
 <style>
     .dashboard-shell-container {
         max-width: 100%;
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.75rem !important;
     }
 
     .dashboard-shell {
         display: flex;
         align-items: flex-start;
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
 
     .dashboard-sidebar {
@@ -274,16 +272,17 @@
     .dashboard-sidebar-card {
         background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(248,251,247,0.96) 100%);
         border: 1px solid var(--border-soft);
-        border-radius: 1.25rem;
-        padding: 1.2rem;
+        border-radius: 1.1rem;
+        padding: 1rem;
         box-shadow: var(--shadow-soft);
     }
 
     .sidebar-header {
         display: flex;
         align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 0.9rem;
+        gap: 0.7rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
         border-bottom: 1px solid var(--border-soft);
     }
 
@@ -301,14 +300,14 @@
     .sidebar-nav {
         display: flex;
         flex-direction: column;
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
 
     .sidebar-nav-link {
         display: flex;
         align-items: center;
         gap: 0.7rem;
-        padding: 0.72rem 0.82rem;
+        padding: 0.7rem 0.8rem;
         border-radius: 0.9rem;
         color: var(--text-primary);
         font-weight: 600;
@@ -317,19 +316,15 @@
     }
 
     .sidebar-nav-link:hover {
-        background: rgba(82, 121, 111, 0.12);
+        background: rgba(82, 121, 111, 0.1);
         color: var(--brand-dark);
-        transform: translateX(3px);
+        transform: translateX(2px);
     }
 
     .sidebar-nav-link.active {
         background: linear-gradient(90deg, rgba(82, 121, 111, 0.16) 0%, rgba(132, 169, 140, 0.2) 100%);
         color: var(--brand-dark);
-        box-shadow: inset 0 0 0 1px rgba(82, 121, 111, 0.12);
-    }
-
-    .sidebar-nav-link-danger {
-        color: #b42318;
+        box-shadow: inset 0 0 0 1px rgba(82, 121, 111, 0.14);
     }
 
     .sidebar-nav-link-danger:hover {
@@ -358,13 +353,13 @@
         background: linear-gradient(135deg, rgba(82, 121, 111, 0.1) 0%, rgba(255, 255, 255, 0.95) 100%);
         border: 1px solid rgba(82, 121, 111, 0.12);
         box-shadow: 0 10px 30px rgba(47, 62, 70, 0.06);
-        padding: 1rem 1.15rem !important;
+        padding: 1rem 1.1rem !important;
     }
 
     .dashboard-card {
         border: 1px solid #e2e8f0;
-        border-radius: 0.95rem;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+        border-radius: 1rem;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         min-height: 100%;
     }
@@ -375,7 +370,7 @@
     }
 
     .dashboard-card .card-body {
-        padding: 0.8rem !important;
+        padding: 0.95rem !important;
     }
 
     .dashboard-card .list-group-item {
@@ -495,181 +490,227 @@
     }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        Chart.register(ChartDataLabels);
+        const chartsSection = document.getElementById('dashboardCharts');
+        if (!chartsSection) {
+            return;
+        }
 
-        const commonDoughnutOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
-                datalabels: {
-                    color: '#111827',
-                    font: { weight: 'bold', size: 12 },
-                    formatter: (value) => value || 0
-                }
+        const loadChartScripts = function () {
+            if (window.__dashboardChartsLoaded) {
+                return;
             }
+
+            window.__dashboardChartsLoaded = true;
+
+            const chartScript = document.createElement('script');
+            chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+            chartScript.defer = true;
+            chartScript.onload = function () {
+                const dataLabelsScript = document.createElement('script');
+                dataLabelsScript.src = 'https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js';
+                dataLabelsScript.defer = true;
+                dataLabelsScript.onload = function () {
+                    renderDashboardCharts();
+                };
+                document.head.appendChild(dataLabelsScript);
+            };
+            document.head.appendChild(chartScript);
         };
 
-        const commonBarOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    color: '#111827',
-                    font: { weight: 'bold', size: 11 },
-                    formatter: (value) => value || 0
+        const renderDashboardCharts = function () {
+            if (!window.Chart || !window.ChartDataLabels) {
+                return;
+            }
+
+            Chart.register(ChartDataLabels);
+
+            const commonDoughnutOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+                    datalabels: {
+                        color: '#111827',
+                        font: { weight: 'bold', size: 12 },
+                        formatter: (value) => value || 0
+                    }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 }
+            };
+
+            const commonBarOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        color: '#111827',
+                        font: { weight: 'bold', size: 11 },
+                        formatter: (value) => value || 0
+                    }
                 },
-                x: {
-                    ticks: { autoSkip: false }
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    },
+                    x: {
+                        ticks: { autoSkip: false }
+                    }
                 }
-            }
+            };
+
+            fetch('{% url "analytics_data" %}')
+                .then(response => response.json())
+                .then(data => {
+                    const attendanceCtx = document.getElementById('attendanceChart');
+                    new Chart(attendanceCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.attendance.labels,
+                            datasets: [{
+                                data: data.attendance.values,
+                                backgroundColor: ['#0d6efd', '#dc3545']
+                            }]
+                        },
+                        options: commonDoughnutOptions
+                    });
+
+                    const monthlyCtx = document.getElementById('monthlyVisitsChart');
+                    new Chart(monthlyCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.monthly_visits.labels,
+                            datasets: [{
+                                label: 'Visits',
+                                data: data.monthly_visits.values,
+                                backgroundColor: '#198754'
+                            }]
+                        },
+                        options: commonBarOptions
+                    });
+
+                    const visitStatusCtx = document.getElementById('visitStatusChart');
+                    new Chart(visitStatusCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.visit_status.labels,
+                            datasets: [{
+                                data: data.visit_status.values,
+                                backgroundColor: ['#198754', '#ffc107']
+                            }]
+                        },
+                        options: commonDoughnutOptions
+                    });
+
+                    const employeeVisitsCtx = document.getElementById('employeeVisitsChart');
+                    new Chart(employeeVisitsCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.employee_visits.labels,
+                            datasets: [{
+                                label: 'Visits',
+                                data: data.employee_visits.values,
+                                backgroundColor: '#0dcaf0'
+                            }]
+                        },
+                        options: {
+                            ...commonBarOptions,
+                            indexAxis: 'y',
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: { precision: 0 }
+                                },
+                                y: {
+                                    ticks: { autoSkip: false }
+                                }
+                            }
+                        }
+                    });
+
+                    const weeklyAttendanceCtx = document.getElementById('weeklyAttendanceChart');
+                    new Chart(weeklyAttendanceCtx, {
+                        type: 'line',
+                        data: {
+                            labels: data.weekly_attendance.labels,
+                            datasets: [
+                                {
+                                    label: 'Present',
+                                    data: data.weekly_attendance.values,
+                                    borderColor: '#198754',
+                                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                                    fill: true,
+                                    tension: 0.3
+                                },
+                                {
+                                    label: 'Absent',
+                                    data: data.weekly_attendance.absent_values,
+                                    borderColor: '#dc3545',
+                                    backgroundColor: 'rgba(220, 53, 69, 0.15)',
+                                    fill: true,
+                                    tension: 0.3
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { precision: 0 } }
+                            }
+                        }
+                    });
+
+                    const employeePerformanceCtx = document.getElementById('employeePerformanceChart');
+                    new Chart(employeePerformanceCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.employee_reports.map(item => item.name),
+                            datasets: [
+                                {
+                                    label: 'Completed',
+                                    data: data.employee_reports.map(item => item.completed_visits),
+                                    backgroundColor: '#198754'
+                                },
+                                {
+                                    label: 'Pending',
+                                    data: data.employee_reports.map(item => item.pending_visits),
+                                    backgroundColor: '#ffc107'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            scales: {
+                                x: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },
+                                y: { stacked: true }
+                            }
+                        }
+                    });
+                });
         };
 
-        fetch('{% url "analytics_data" %}')
-            .then(response => response.json())
-            .then(data => {
-                const attendanceCtx = document.getElementById('attendanceChart');
-                new Chart(attendanceCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: data.attendance.labels,
-                        datasets: [{
-                            data: data.attendance.values,
-                            backgroundColor: ['#0d6efd', '#dc3545']
-                        }]
-                    },
-                    options: commonDoughnutOptions
-                });
-
-                const monthlyCtx = document.getElementById('monthlyVisitsChart');
-                new Chart(monthlyCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.monthly_visits.labels,
-                        datasets: [{
-                            label: 'Visits',
-                            data: data.monthly_visits.values,
-                            backgroundColor: '#198754'
-                        }]
-                    },
-                    options: commonBarOptions
-                });
-
-                const visitStatusCtx = document.getElementById('visitStatusChart');
-                new Chart(visitStatusCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: data.visit_status.labels,
-                        datasets: [{
-                            data: data.visit_status.values,
-                            backgroundColor: ['#198754', '#ffc107']
-                        }]
-                    },
-                    options: commonDoughnutOptions
-                });
-
-                const employeeVisitsCtx = document.getElementById('employeeVisitsChart');
-                new Chart(employeeVisitsCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.employee_visits.labels,
-                        datasets: [{
-                            label: 'Visits',
-                            data: data.employee_visits.values,
-                            backgroundColor: '#0dcaf0'
-                        }]
-                    },
-                    options: {
-                        ...commonBarOptions,
-                        indexAxis: 'y',
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                ticks: { precision: 0 }
-                            },
-                            y: {
-                                ticks: { autoSkip: false }
-                            }
-                        }
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        loadChartScripts();
+                        observer.disconnect();
                     }
                 });
+            }, { rootMargin: '200px' });
 
-                const weeklyAttendanceCtx = document.getElementById('weeklyAttendanceChart');
-                new Chart(weeklyAttendanceCtx, {
-                    type: 'line',
-                    data: {
-                        labels: data.weekly_attendance.labels,
-                        datasets: [
-                            {
-                                label: 'Present',
-                                data: data.weekly_attendance.values,
-                                borderColor: '#198754',
-                                backgroundColor: 'rgba(25, 135, 84, 0.2)',
-                                fill: true,
-                                tension: 0.3
-                            },
-                            {
-                                label: 'Absent',
-                                data: data.weekly_attendance.absent_values,
-                                borderColor: '#dc3545',
-                                backgroundColor: 'rgba(220, 53, 69, 0.15)',
-                                fill: true,
-                                tension: 0.3
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { precision: 0 } }
-                        }
-                    }
-                });
-
-                const employeePerformanceCtx = document.getElementById('employeePerformanceChart');
-                new Chart(employeePerformanceCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.employee_reports.map(item => item.name),
-                        datasets: [
-                            {
-                                label: 'Completed',
-                                data: data.employee_reports.map(item => item.completed_visits),
-                                backgroundColor: '#198754'
-                            },
-                            {
-                                label: 'Pending',
-                                data: data.employee_reports.map(item => item.pending_visits),
-                                backgroundColor: '#ffc107'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } },
-                        scales: {
-                            x: { stacked: true, beginAtZero: true, ticks: { precision: 0 } },
-                            y: { stacked: true }
-                        }
-                    }
-                });
-            });
+            observer.observe(chartsSection);
+        } else {
+            loadChartScripts();
+        }
     });
 </script>
 {% endblock %}

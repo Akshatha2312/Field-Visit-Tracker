@@ -3,11 +3,11 @@
 {% block title %}Client Visits | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-2 compact-page">
-    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+<div class="container page-shell compact-page">
+    <div class="page-header">
         <div>
-            <h1 class="h3 fw-bold text-primary mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Client Visits</h1>
-            <p class="text-muted mb-0">Manage your scheduled visits with a cleaner view of each record.</p>
+            <h1 class="page-title"><i class="bi bi-geo-alt-fill me-2"></i>Client Visits</h1>
+            <p class="page-subtitle">Manage your scheduled visits with a cleaner view of each record.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
             <a href="{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
@@ -15,8 +15,9 @@
         </div>
     </div>
 
-    <form method="get" class="card modern-card p-2 p-md-3 mb-2">
-        <div class="row g-2 align-items-end">
+    <form method="get" class="card page-card mb-3">
+        <div class="card-body">
+        <div class="row g-3 align-items-end">
             <div class="col-12 col-md-6 col-lg-2">
                 <label class="form-label"><i class="bi bi-person me-2"></i>Client Name</label>
                 <input type="text" name="client_name" class="form-control" value="{{ client_name_filter }}" placeholder="Client name">
@@ -45,10 +46,11 @@
                 <button type="submit" class="btn btn-outline-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Search</span></button>
             </div>
         </div>
+        </div>
     </form>
 
-    <div class="card modern-card">
-        <div class="card-body p-2 p-md-3">
+    <div class="card page-card">
+        <div class="card-body">
             {% if visits %}
                 <div class="table-responsive rounded-3">
                     <table class="table table-hover table-sm align-middle visits-table mb-0">
@@ -147,8 +149,8 @@
 
 <style>
     .compact-page {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.75rem !important;
     }
 
     .visit-date-cell {
@@ -162,9 +164,9 @@
         word-break: normal;
     }
 
-    .modern-card {
+    .page-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.2rem;
+        border-radius: 1.15rem;
         box-shadow: 0 12px 32px rgba(15,23,42,0.06);
         background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
     }

@@ -3,18 +3,18 @@
 {% block title %}Employees | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-2 compact-page">
-    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+<div class="container page-shell compact-page">
+    <div class="page-header">
         <div>
-            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-people-fill me-2"></i>Employees</h1>
-            <p class="text-muted mb-0">Manage and search employee records.</p>
+            <h1 class="page-title"><i class="bi bi-people-fill me-2"></i>Employees</h1>
+            <p class="page-subtitle">Manage and search employee records.</p>
         </div>
         <a href="{% if request.user.role == 'ADMIN' or request.user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-outline-secondary"><i class="bi bi-speedometer2 me-2"></i>Back to Dashboard</a>
     </div>
 
-    <div class="card modern-card">
-        <div class="card-body p-2 p-md-3">
-            <form method="get" class="row g-2 align-items-end">
+    <div class="card page-card">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label for="role" class="form-label"><i class="bi bi-funnel me-2"></i>Role</label>
                     <select class="form-select" id="role" name="role">
@@ -36,7 +36,7 @@
                 </div>
             </form>
 
-            <div class="d-flex justify-content-end mt-2">
+            <div class="d-flex justify-content-end mt-3">
                 <a href="{% url 'employee:create' %}" class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>Add Employee</a>
             </div>
 
@@ -116,13 +116,13 @@
 
 <style>
     .compact-page {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.75rem !important;
     }
 
-    .modern-card {
+    .page-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.1rem;
+        border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
     }
 

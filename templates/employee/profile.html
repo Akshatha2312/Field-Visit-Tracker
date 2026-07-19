@@ -3,13 +3,13 @@
 {% block title %}Profile | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-2 compact-page">
+<div class="container page-shell compact-page">
     <div class="row justify-content-center">
         <div class="col-xl-10 col-lg-11">
-            <div class="card modern-card">
-                <div class="card-body p-2 p-md-3">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                        <h2 class="h4 fw-bold text-primary mb-0"><i class="bi bi-person-circle me-2"></i>My Profile</h2>
+            <div class="card page-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <h2 class="page-title mb-0"><i class="bi bi-person-circle me-2"></i>My Profile</h2>
                         <span class="badge rounded-pill bg-primary-subtle text-primary">Update account details</span>
                     </div>
 
@@ -86,13 +86,13 @@
 
 <style>
     .compact-page {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.75rem !important;
     }
 
-    .modern-card {
+    .page-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.1rem;
+        border-radius: 1.15rem;
         box-shadow: 0 10px 24px rgba(15,23,42,0.06);
         background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
     }

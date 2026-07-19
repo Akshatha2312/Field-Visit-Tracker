@@ -14,12 +14,23 @@ def get_employee_for_user(user):
     if not user or not getattr(user, "is_authenticated", False):
         return None
 
-    if hasattr(user, "employee"):
-        return user.employee
+    cached_employee = getattr(user, "_cached_employee", None)
+    if cached_employee is not None:
+        return cached_employee
 
-    return Employee.objects.filter(
+    if hasattr(user, "employee"):
+        employee = user.employee
+        setattr(user, "_cached_employee", employee)
+        return employee
+
+    employee = Employee.objects.filter(
         Q(email=user.email) | Q(name=user.username)
-    ).first()
+    ).select_related("user").first()
+
+    if employee is not None:
+        setattr(user, "_cached_employee", employee)
+
+    return employee
 
 
 def get_user_role(user):

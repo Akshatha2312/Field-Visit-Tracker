@@ -3,17 +3,17 @@
 {% block title %}{{ title }} | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-2 compact-page">
-    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+<div class="container page-shell compact-page">
+    <div class="page-header">
         <div>
-            <h1 class="h3 fw-bold text-primary mb-1"><i class="bi bi-person-plus me-2"></i>{{ title }}</h1>
-            <p class="text-muted mb-0">Create or update an employee record.</p>
+            <h1 class="page-title"><i class="bi bi-person-plus me-2"></i>{{ title }}</h1>
+            <p class="page-subtitle">Create or update an employee record.</p>
         </div>
         <a href="{% url 'employee:list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
     </div>
 
-    <div class="card modern-card">
-        <div class="card-body p-2 p-md-3">
+    <div class="card page-card">
+        <div class="card-body">
             <form method="post" class="row g-3" novalidate>
                 {% csrf_token %}
                 <div class="col-md-6">
@@ -59,13 +59,13 @@
 
 <style>
     .compact-page {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.75rem !important;
     }
 
-    .modern-card {
+    .page-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.2rem;
+        border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
         background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
     }

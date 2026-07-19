@@ -3,15 +3,15 @@
 {% block title %}{{ title }} | Field Visit Tracker{% endblock %}
 
 {% block content %}
-<div class="container py-2 compact-page">
+<div class="container page-shell compact-page">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-11">
-            <div class="card modern-form-card border-0">
-                <div class="card-body p-2 p-md-3">
-                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
+            <div class="card page-card border-0">
+                <div class="card-body">
+                    <div class="page-header mb-3">
                         <div>
-                            <h2 class="h4 fw-bold mb-1" style="color: #2F3E46;"><i class="bi bi-pencil-square me-2"></i>{{ title }}</h2>
-                            <p class="text-muted mb-0">Update the visit details below.</p>
+                            <h2 class="page-title mb-1"><i class="bi bi-pencil-square me-2"></i>{{ title }}</h2>
+                            <p class="page-subtitle">Update the visit details below.</p>
                         </div>
                     </div>
 
@@ -128,8 +128,8 @@
         padding-bottom: 0.5rem !important;
     }
 
-    .modern-form-card {
-        border-radius: 1.1rem;
+    .page-card {
+        border-radius: 1.15rem;
         box-shadow: 0 14px 35px rgba(47, 62, 70, 0.10);
         border: 1px solid rgba(82, 121, 111, 0.12);
     }
