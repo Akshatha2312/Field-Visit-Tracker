@@ -14,7 +14,7 @@
 
     <div class="card modern-card">
         <div class="card-body p-2 p-md-3">
-            <form method="post" class="row g-3">
+            <form method="post" class="row g-3" novalidate>
                 {% csrf_token %}
                 <div class="col-md-6">
                     <label for="username" class="form-label fw-semibold">Username</label>
@@ -26,11 +26,13 @@
                 </div>
                 <div class="col-md-6">
                     <label for="email" class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" title="Please enter a valid Gmail address (example@gmail.com)." required>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ employee.email|default_if_none:'' }}" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Please enter a valid email address." required data-validate="email">
+                    <div class="validation-message mt-1" id="email-validation"></div>
                 </div>
                 <div class="col-md-6">
                     <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
-                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" title="Please enter a valid 10-digit mobile number." placeholder="10-digit number">
+                    <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ employee.phone_number|default_if_none:'' }}" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" title="Please enter a valid 10-digit mobile number." placeholder="10-digit number" data-validate="phone">
+                    <div class="validation-message mt-1" id="phone_number-validation"></div>
                 </div>
                 <div class="col-md-6">
                     <label for="role" class="form-label fw-semibold">Role</label>
@@ -41,7 +43,11 @@
                 </div>
                 <div class="col-md-6">
                     <label for="password" class="form-label fw-semibold">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" {% if not employee %}required{% endif %}>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" name="password" {% if not employee %}required{% endif %} data-validate="password">
+                        <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password" aria-label="Show password"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <div class="validation-message mt-1" id="password-validation"></div>
                 </div>
                 <div class="col-12 d-grid d-md-flex justify-content-md-end mt-2">
                     <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-check2-circle me-2"></i>Save</button>
@@ -84,10 +90,117 @@
         box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.16);
     }
 
+    .validation-message {
+        color: #b42318;
+        font-size: 0.85rem;
+        min-height: 1.2rem;
+    }
+
+    .is-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.16) !important;
+    }
+
     @media (max-width: 767.98px) {
         .btn {
             width: 100%;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone_number');
+        const passwordInput = document.getElementById('password');
+        const emailMessage = document.getElementById('email-validation');
+        const phoneMessage = document.getElementById('phone_number-validation');
+        const passwordMessage = document.getElementById('password-validation');
+
+        function validateEmail(value) {
+            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return pattern.test(value);
+        }
+
+        function validatePhone(value) {
+            return /^\d{10}$/.test(value);
+        }
+
+        function validatePassword(value) {
+            return value.length >= 8 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
+        }
+
+        function setValidation(input, messageElement, isValid, message) {
+            input.classList.toggle('is-invalid', !isValid);
+            if (messageElement) {
+                messageElement.textContent = isValid ? '' : message;
+            }
+        }
+
+        function validateField(input, messageElement, validator, message) {
+            if (!input) return;
+            const value = input.value.trim();
+            const isValid = value === '' ? true : validator(value);
+            setValidation(input, messageElement, isValid, message);
+            return isValid || value === '';
+        }
+
+        function attachToggle(buttons) {
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetId);
+                    if (!targetInput) return;
+                    const isPassword = targetInput.type === 'password';
+                    targetInput.type = isPassword ? 'text' : 'password';
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+                    }
+                });
+            });
+        }
+
+        if (emailInput) {
+            emailInput.addEventListener('input', function () {
+                validateField(emailInput, emailMessage, validateEmail, 'Please enter a valid email address.');
+            });
+        }
+
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function () {
+                const value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+                phoneInput.value = value;
+                validateField(phoneInput, phoneMessage, validatePhone, 'Enter a valid 10-digit mobile number.');
+            });
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function () {
+                validateField(passwordInput, passwordMessage, validatePassword, 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
+            });
+        }
+
+        attachToggle(document.querySelectorAll('.toggle-password'));
+
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+                if (emailInput) {
+                    isValid = validateField(emailInput, emailMessage, validateEmail, 'Please enter a valid email address.') && isValid;
+                }
+                if (phoneInput) {
+                    isValid = validateField(phoneInput, phoneMessage, validatePhone, 'Enter a valid 10-digit mobile number.') && isValid;
+                }
+                if (passwordInput) {
+                    isValid = validateField(passwordInput, passwordMessage, validatePassword, 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.') && isValid;
+                }
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

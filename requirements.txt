@@ -10,7 +10,6 @@ packaging==26.2
 pillow==12.3.0
 python-dateutil==2.9.0.post0
 reportlab==5.0.0
-sib-api-v3-sdk==7.6.0
 six==1.17.0
 sqlparse==0.5.5
 tzdata==2026.3

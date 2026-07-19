@@ -1,14 +1,15 @@
 import logging
-import logging
+import re
 
-print("***** employee/views.py LOADED *****")
+logger = logging.getLogger(__name__)
 
-...
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
+from django.core.validators import validate_email
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -20,7 +21,36 @@ from .permissions import admin_required, is_admin_user
 from .serializers import EmployeeSerializer
 from .utils import get_employee_for_user, send_employee_welcome_email
 
-logger = logging.getLogger(__name__)
+
+def _validate_email_value(email_value):
+    email_value = (email_value or "").strip()
+    if not email_value:
+        return email_value
+    try:
+        validate_email(email_value)
+    except ValidationError as exc:
+        raise ValidationError("Please enter a valid email address.") from exc
+    return email_value
+
+
+def _validate_phone_value(phone_value):
+    phone_value = (phone_value or "").strip()
+    if not phone_value:
+        return None
+    if not re.fullmatch(r"\d{10}", phone_value):
+        raise ValidationError("Enter a valid 10-digit mobile number.")
+    return int(phone_value)
+
+
+def _validate_password_value(password_value):
+    password_value = password_value or ""
+    if not password_value:
+        return password_value
+    try:
+        validate_password(password_value)
+    except ValidationError as exc:
+        raise ValidationError("Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.") from exc
+    return password_value
 
 
 @login_required(login_url="login")
@@ -99,46 +129,47 @@ def employee_create_view(request):
             messages.error(request, "Password is required.")
             return render(request, "employee/form.html", {"title": "Add Employee"})
 
+        try:
+            email_value = _validate_email_value(form_data.get("email", "").strip())
+            phone_value = _validate_phone_value(form_data.get("phone_number", "").strip())
+            password_value = _validate_password_value(password)
+        except ValidationError as exc:
+            messages.error(request, str(exc))
+            return render(request, "employee/form.html", {"title": "Add Employee"})
+
         user = User.objects.create_user(
             username=username,
             password=password,
         )
 
-        phone_number_str = form_data.get("phone_number", "").strip()
-        phone_number = int(phone_number_str) if phone_number_str else None
-
         employee = Employee.objects.create(
             user=user,
             name=form_data.get("name", "").strip(),
-            email=form_data.get("email", "").strip(),
-            phone_number=phone_number,
-            password=password,
+            email=email_value,
+            phone_number=phone_value,
+            password=password_value,
             role=form_data.get("role", Employee.Role.EMPLOYEE),
         )
 
         messages.success(request, "Employee created successfully.")
 
         try:
-            print("\n========== CALLING WELCOME EMAIL ==========")
-
             send_employee_welcome_email(
                 employee,
                 password,
                 request.build_absolute_uri(reverse("login")),
             )
-
-            print("========== EMAIL SENT SUCCESSFULLY ==========\n")
-
-        except Exception as e:
-            import traceback
-
-            print("\n========== EMAIL ERROR ==========")
-            traceback.print_exc()
-            print("=================================\n")
-
-            logger.exception(
-                "Failed to send welcome email for employee %s",
+            logger.info(
+                "Welcome email sent successfully for employee: %s (%s)",
+                employee.name,
                 employee.email,
+            )
+        except Exception as e:
+            logger.exception(
+                "Failed to send welcome email for employee %s (%s). Exception: %s",
+                employee.name,
+                employee.email,
+                str(e),
             )
 
             messages.warning(
@@ -176,22 +207,29 @@ def employee_edit_view(request, pk):
             messages.error(request, "A user with that username already exists.")
             return render(request, "employee/form.html", {"title": "Edit Employee", "employee": employee})
 
+        try:
+            email_value = _validate_email_value(new_email)
+            phone_value = _validate_phone_value(request.POST.get("phone_number", "").strip())
+            password_value = _validate_password_value(password) if password else password
+        except ValidationError as exc:
+            messages.error(request, str(exc))
+            return render(request, "employee/form.html", {"title": "Edit Employee", "employee": employee})
+
         if employee.user is not None:
             if username:
                 employee.user.username = username
             if new_email:
-                employee.user.email = new_email
+                employee.user.email = email_value
             employee.user.save(update_fields=["username", "email"])
 
         employee.name = request.POST.get("name", "").strip()
-        employee.email = new_email
-        phone_number_str = request.POST.get("phone_number", "").strip()
-        employee.phone_number = int(phone_number_str) if phone_number_str else None
+        employee.email = email_value
+        employee.phone_number = phone_value
         employee.role = request.POST.get("role", employee.role)
         if password:
-            employee.password = password
+            employee.password = password_value
             if employee.user is not None:
-                employee.user.set_password(password)
+                employee.user.set_password(password_value)
                 employee.user.save(update_fields=["password"])
         employee.save()
         messages.success(request, "Employee updated successfully.")

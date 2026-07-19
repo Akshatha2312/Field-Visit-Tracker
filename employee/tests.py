@@ -190,6 +190,18 @@ class EmployeeManagementViewTests(TestCase):
 
 
 class ProfileViewTests(TestCase):
+    def _create_admin_user(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="admin_emp", password="strongpass123")
+        Employee.objects.create(
+            user=user,
+            name="Admin Employee",
+            email="admin-emp@example.com",
+            password="secret123",
+            role=Employee.Role.ADMIN,
+        )
+        return user
+
     def test_profile_update_saves_name_email_and_phone_and_shows_success_message(self):
         User = get_user_model()
         user = User.objects.create_user(username="employee", email="old@example.com", password="strongpass123")
@@ -242,3 +254,46 @@ class ProfileViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Enter a valid email address")
+
+    def test_profile_rejects_invalid_phone_number(self):
+        User = get_user_model()
+        user = User.objects.create_user(username="employee3", email="old3@example.com", password="strongpass123")
+        Employee.objects.create(
+            user=user,
+            name="Old Name",
+            email="old3@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+        )
+        self.client.login(username="employee3", password="strongpass123")
+
+        response = self.client.post(
+            reverse("employee:profile"),
+            {
+                "name": "Name",
+                "email": "new3@example.com",
+                "phone_number": "12345",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Enter a valid 10-digit mobile number")
+
+    def test_admin_cannot_create_employee_with_weak_password(self):
+        self._create_admin_user()
+        self.client.login(username="admin_emp", password="strongpass123")
+
+        response = self.client.post(
+            reverse("employee:create"),
+            {
+                "username": "weakemployee",
+                "name": "Weak Employee",
+                "email": "weak@example.com",
+                "phone_number": "9876543210",
+                "role": Employee.Role.EMPLOYEE,
+                "password": "password",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Password must be at least 8 characters")

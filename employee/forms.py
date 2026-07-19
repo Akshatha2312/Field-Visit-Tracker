@@ -1,5 +1,7 @@
+import re
+
 from django import forms
-from django.core.validators import RegexValidator
+from django.core.validators import validate_email
 
 from .models import Employee
 
@@ -17,7 +19,8 @@ class EmployeeProfileForm(forms.ModelForm):
             "minlength": "10",
             "maxlength": "10",
             "title": "Please enter a valid 10-digit mobile number.",
-            "placeholder": "10-digit number"
+            "placeholder": "10-digit number",
+            "data-validate": "phone",
         }),
     )
 
@@ -28,8 +31,9 @@ class EmployeeProfileForm(forms.ModelForm):
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={
                 "class": "form-control",
-                "pattern": "[a-zA-Z0-9._%+-]+@gmail\\.com",
-                "title": "Please enter a valid Gmail address (example@gmail.com).",
+                "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+                "title": "Please enter a valid email address.",
+                "data-validate": "email",
             }),
         }
 
@@ -43,11 +47,20 @@ class EmployeeProfileForm(forms.ModelForm):
             if field_name not in {"username", "role"}:
                 field.widget.attrs.setdefault("class", "form-control")
 
+    def clean_email(self):
+        email = (self.cleaned_data.get("email") or "").strip()
+        if not email:
+            return email
+        try:
+            validate_email(email)
+        except forms.ValidationError:
+            raise forms.ValidationError("Please enter a valid email address.")
+        return email
+
     def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
-        if phone_number:
-            try:
-                return int(phone_number)
-            except ValueError:
-                raise forms.ValidationError("Please enter a valid 10-digit mobile number.")
-        return None
+        phone_number = (self.cleaned_data.get("phone_number") or "").strip()
+        if not phone_number:
+            return None
+        if not re.fullmatch(r"\d{10}", phone_number):
+            raise forms.ValidationError("Enter a valid 10-digit mobile number.")
+        return int(phone_number)

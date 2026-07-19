@@ -14,8 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django import forms
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.urls import include, path
 from django.urls import reverse_lazy
 
@@ -23,6 +27,18 @@ from attendance.views import attendance_dashboard
 from dashboard.views import dashboard as admin_dashboard_view, employee_dashboard as employee_dashboard_view
 
 from .views import bad_request, custom_404, custom_500, permission_denied
+
+
+class StrongSetPasswordForm(SetPasswordForm):
+    def clean_new_password1(self):
+        password = self.cleaned_data.get("new_password1")
+        if password:
+            try:
+                validate_password(password, user=self.user)
+            except ValidationError as exc:
+                raise forms.ValidationError(list(exc.messages)) from exc
+        return password
+
 
 urlpatterns = [
     path('', include('dashboard.urls')),
@@ -47,6 +63,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
         template_name='registration/password_reset_confirm.html',
         success_url=reverse_lazy('password_reset_complete'),
+        form_class=StrongSetPasswordForm,
     ), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'

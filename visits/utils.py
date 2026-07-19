@@ -1,5 +1,9 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
+
+logger = logging.getLogger(__name__)
 
 
 def send_visit_created_email(employee, visit):
@@ -20,9 +24,20 @@ def send_visit_created_email(employee, visit):
     )
 
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
-    except Exception:
-        pass
+        result = send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [employee.email],
+            fail_silently=False,
+        )
+        logger.info("Visit created email sent successfully to %s (result=%s)", employee.email, result)
+    except Exception as e:
+        logger.exception(
+            "Failed to send visit created email for %s. Error: %s",
+            employee.email,
+            str(e),
+        )
 
 
 def send_visit_completed_email(employee, visit):
@@ -41,10 +56,20 @@ def send_visit_completed_email(employee, visit):
     )
 
     try:
-        print("COMPLETED EMAIL FUNCTION CALLED")
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
+        result = send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [employee.email],
+            fail_silently=False,
+        )
+        logger.info("Visit completed email sent successfully to %s (result=%s)", employee.email, result)
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        logger.exception(
+            "Failed to send visit completed email for %s. Error: %s",
+            employee.email,
+            str(e),
+        )
 
 
 def send_visit_reminder_email(employee, visit):
@@ -66,6 +91,17 @@ def send_visit_reminder_email(employee, visit):
     )
 
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
-    except Exception:
-        pass
+        result = send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [employee.email],
+            fail_silently=False,
+        )
+        logger.info("Visit reminder email sent successfully to %s (result=%s)", employee.email, result)
+    except Exception as e:
+        logger.exception(
+            "Failed to send visit reminder email for %s. Error: %s",
+            employee.email,
+            str(e),
+        )

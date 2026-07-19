@@ -1,6 +1,10 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 def _format_ist_date_time(value):
@@ -25,15 +29,20 @@ def send_checkin_email(employee, attendance):
     )
 
     try:
-        send_mail(
+        result = send_mail(
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
             [employee.email],
             fail_silently=False,
         )
+        logger.info("Check-in email sent successfully to %s (result=%s)", employee.email, result)
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        logger.exception(
+            "Failed to send check-in email for %s. Error: %s",
+            employee.email,
+            str(e),
+        )
 
 
 def send_checkout_email(employee, attendance):
@@ -53,6 +62,17 @@ def send_checkout_email(employee, attendance):
     )
 
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [employee.email], fail_silently=False)
+        result = send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [employee.email],
+            fail_silently=False,
+        )
+        logger.info("Check-out email sent successfully to %s (result=%s)", employee.email, result)
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        logger.exception(
+            "Failed to send check-out email for %s. Error: %s",
+            employee.email,
+            str(e),
+        )
