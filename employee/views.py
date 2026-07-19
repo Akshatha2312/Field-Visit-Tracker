@@ -1,5 +1,9 @@
 import logging
+import logging
 
+print("***** employee/views.py LOADED *****")
+
+...
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -80,11 +84,13 @@ def employee_create_view(request):
         username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "")
         form_data = request.POST.copy()
+
         if not username:
             messages.error(request, "Username is required.")
             return render(request, "employee/form.html", {"title": "Add Employee"})
 
         User = get_user_model()
+
         if User.objects.filter(username=username).exists():
             messages.error(request, "A user with that username already exists.")
             return render(request, "employee/form.html", {"title": "Add Employee"})
@@ -93,9 +99,14 @@ def employee_create_view(request):
             messages.error(request, "Password is required.")
             return render(request, "employee/form.html", {"title": "Add Employee"})
 
-        user = User.objects.create_user(username=username, password=password)
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+        )
+
         phone_number_str = form_data.get("phone_number", "").strip()
         phone_number = int(phone_number_str) if phone_number_str else None
+
         employee = Employee.objects.create(
             user=user,
             name=form_data.get("name", "").strip(),
@@ -104,26 +115,32 @@ def employee_create_view(request):
             password=password,
             role=form_data.get("role", Employee.Role.EMPLOYEE),
         )
+
         messages.success(request, "Employee created successfully.")
 
         try:
-            send_employee_welcome_email(
-            employee,
-            password,
-            request.build_absolute_uri(reverse("login")),
-            )
-        except Exception as e:
-            logger.exception(
-                "Failed to send welcome email for employee %s", employee.email
-            )
-            messages.warning(
-                request,
-                "Employee was created successfully, but the welcome email could not be sent.",
-            )
-            print("Email sending failed:", e)
+            print("\n========== CALLING WELCOME EMAIL ==========")
 
-        except Exception:
-            logger.exception("Failed to send welcome email for employee %s", employee.email)
+            send_employee_welcome_email(
+                employee,
+                password,
+                request.build_absolute_uri(reverse("login")),
+            )
+
+            print("========== EMAIL SENT SUCCESSFULLY ==========\n")
+
+        except Exception as e:
+            import traceback
+
+            print("\n========== EMAIL ERROR ==========")
+            traceback.print_exc()
+            print("=================================\n")
+
+            logger.exception(
+                "Failed to send welcome email for employee %s",
+                employee.email,
+            )
+
             messages.warning(
                 request,
                 "Employee was created successfully, but the welcome email could not be sent.",
@@ -131,7 +148,13 @@ def employee_create_view(request):
 
         return redirect("employee:list")
 
-    return render(request, "employee/form.html", {"title": "Add Employee"})
+    return render(
+        request,
+        "employee/form.html",
+        {
+            "title": "Add Employee",
+        },
+    )
 
 
 @login_required(login_url="login")
