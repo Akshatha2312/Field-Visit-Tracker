@@ -108,13 +108,19 @@ def employee_create_view(request):
 
         try:
             send_employee_welcome_email(
-                employee,
-        password,
-        request.build_absolute_uri(reverse("login")),
+            employee,
+            password,
+            request.build_absolute_uri(reverse("login")),
             )
         except Exception as e:
+            logger.exception(
+                "Failed to send welcome email for employee %s", employee.email
+            )
+            messages.warning(
+                request,
+                "Employee was created successfully, but the welcome email could not be sent.",
+            )
             print("Email sending failed:", e)
-        
 
         except Exception:
             logger.exception("Failed to send welcome email for employee %s", employee.email)
