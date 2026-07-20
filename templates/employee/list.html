@@ -31,14 +31,11 @@
                     <label for="search" class="form-label"><i class="bi bi-search me-2"></i>Search</label>
                     <input type="text" class="form-control" id="search" name="q" value="{{ search_query }}" placeholder="Search by name or email">
                 </div>
-                <div class="col-12 d-grid d-md-flex justify-content-md-end">
+                <div class="col-12 d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
                     <button type="submit" class="btn btn-primary btn-loading"><i class="bi bi-search me-2"></i><span class="btn-text">Search</span></button>
+                    <a href="{% url 'employee:create' %}" class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>Add Employee</a>
                 </div>
             </form>
-
-            <div class="d-flex justify-content-end mt-3">
-                <a href="{% url 'employee:create' %}" class="btn btn-primary"><i class="bi bi-person-plus me-2"></i>Add Employee</a>
-            </div>
 
             <div class="table-responsive mt-3">
                 {% if employees %}
@@ -128,7 +125,7 @@
     }
 
     .page-card .card-body {
-        padding: 1.2rem 1.3rem !important;
+        padding: 1rem 1.1rem !important;
     }
 
     .table th,

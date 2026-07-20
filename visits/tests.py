@@ -1,8 +1,14 @@
 from datetime import date
+import tempfile
+import uuid
+from pathlib import Path
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core import mail
+from django.core.management import call_command
+from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from employee.models import Employee
 
@@ -105,3 +111,68 @@ class ClientVisitViewTests(TestCase):
         response = self.client.get(reverse("visits:detail", kwargs={"pk": visit.pk}))
 
         self.assertEqual(response.status_code, 302)
+
+
+class ClientVisitReminderCommandTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="alexr", password="secret123")
+        self.employee = Employee.objects.create(
+            name="Alex Smith",
+            email="alex@example.com",
+            password="secret123",
+            role=Employee.Role.EMPLOYEE,
+            user=self.user,
+        )
+
+    def test_send_visit_reminders_command_sends_email_for_today_pending_visit(self):
+        visit = ClientVisit.objects.create(
+            employee=self.employee,
+            client_name="Ada Lovelace",
+            company_name="Acme",
+            contact_number="555-0100",
+            location="Lagos",
+            visit_date=timezone.localdate(),
+            purpose="Review",
+        )
+
+        temp_path = Path(tempfile.gettempdir()) / f"visit_reminder_{uuid.uuid4().hex}.log"
+        with override_settings(
+            EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+            VISIT_REMINDER_LOG_PATH=str(temp_path),
+        ):
+            call_command("send_visit_reminders")
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Reminder: Upcoming Client Visit")
+        self.assertIn("Client Name: Ada Lovelace", mail.outbox[0].body)
+
+    def test_send_visit_reminders_command_does_not_send_for_past_or_completed_visits(self):
+        ClientVisit.objects.create(
+            employee=self.employee,
+            client_name="Past Client",
+            company_name="Acme",
+            contact_number="555-0100",
+            location="Lagos",
+            visit_date=date(2020, 1, 1),
+            purpose="Review",
+            status=ClientVisit.Status.PENDING,
+        )
+        ClientVisit.objects.create(
+            employee=self.employee,
+            client_name="Completed Client",
+            company_name="Acme",
+            contact_number="555-0100",
+            location="Lagos",
+            visit_date=timezone.localdate(),
+            purpose="Review",
+            status=ClientVisit.Status.COMPLETED,
+        )
+
+        temp_path = Path(tempfile.gettempdir()) / f"visit_reminder_{uuid.uuid4().hex}.log"
+        with override_settings(
+            EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+            VISIT_REMINDER_LOG_PATH=str(temp_path),
+        ):
+            call_command("send_visit_reminders")
+
+        self.assertEqual(len(mail.outbox), 0)
