@@ -124,8 +124,14 @@
 <style>
     .modern-card {
         border: 1px solid #e2e8f0;
-        border-radius: 1.1rem;
+        border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .modern-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
     }
 
     .attendance-dashboard-shell {
@@ -133,106 +139,147 @@
         flex: 1 0 auto;
         display: flex;
         flex-direction: column;
+        padding-top: 0.5rem !important;
+        padding-bottom: 1rem !important;
     }
 
     .attendance-top-row .card-body {
-        padding: 0.95rem !important;
+        padding: 1.1rem !important;
     }
 
     .attendance-top-row {
         flex: 1 0 auto;
+        gap: 1rem;
     }
+
     .status-icon {
-        width: 2.4rem;
-        height: 2.4rem;
+        width: 2.6rem;
+        height: 2.6rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.9rem;
+        border-radius: 0.95rem;
         background: linear-gradient(135deg, #eef4ef 0%, #f8fbf7 100%);
-        font-size: 1rem;
+        font-size: 1.1rem;
         color: #52796F;
+        flex-shrink: 0;
     }
+
     .legend-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.55rem 0.8rem;
+        gap: 0.6rem 1rem;
         color: #5c6f72;
         font-size: 0.8rem;
+        margin-bottom: 0.5rem;
     }
+
     .legend-item {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
     }
+
     .legend-dot,
     .dot {
-        width: 0.7rem;
-        height: 0.7rem;
+        width: 0.75rem;
+        height: 0.75rem;
         border-radius: 50%;
         display: inline-block;
+        flex-shrink: 0;
     }
+
     .legend-dot.completed,
     .dot.completed,
     .status-pill.completed .dot {
         background: #2f9e44;
     }
+
     .legend-dot.partial,
     .dot.partial,
     .status-pill.partial .dot {
         background: #f59f00;
     }
+
     .legend-dot.absent,
     .dot.absent,
     .status-pill.absent .dot {
         background: #e03131;
     }
+
     .legend-dot.current,
     .dot.current {
         background: #1c7cd6;
     }
+
     .status-pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 1rem;
-        height: 1rem;
+        width: 1.1rem;
+        height: 1.1rem;
         border-radius: 999px;
         background: #f8fbf7;
         border: 1px solid #dfe8de;
         margin: 0 auto;
     }
+
     .calendar-table th, .calendar-table td {
         min-width: 46px;
         height: 44px;
         vertical-align: middle;
-        padding: 0.2rem;
+        padding: 0.3rem;
         font-size: 0.75rem;
+        font-weight: 500;
     }
+
+    .calendar-table thead th {
+        background: linear-gradient(180deg, #f7faf7 0%, #eef4ee 100%);
+        color: var(--brand-dark);
+        font-weight: 700;
+    }
+
     .calendar-cell {
         background: #fff;
     }
+
     .calendar-day {
         font-weight: 700;
         line-height: 1;
-        margin-bottom: 0.12rem;
+        margin-bottom: 0.15rem;
+        color: var(--text-primary);
     }
+
     .calendar-today {
         background: linear-gradient(135deg, #eef4ef 0%, #ffffff 100%);
-        box-shadow: inset 0 0 0 1px #93c5fd;
+        box-shadow: inset 0 0 0 2px #0d6efd;
+        border-radius: 0.5rem;
     }
+
     .calendar-empty {
         background: #f8fafc;
     }
+
     @media (max-width: 767.98px) {
         .calendar-table th, .calendar-table td {
             min-width: 46px;
             height: 48px;
             font-size: 0.75rem;
+            padding: 0.25rem;
         }
 
         .attendance-top-row .card-body {
-            padding: 0.85rem !important;
+            padding: 0.95rem !important;
+        }
+
+        .attendance-dashboard-shell {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+
+        .legend-row {
+            gap: 0.5rem 0.8rem;
+            font-size: 0.75rem;
         }
     }
 </style>

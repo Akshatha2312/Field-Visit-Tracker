@@ -187,12 +187,57 @@
         border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
     }
+
+    .page-card .card-body {
+        padding: 1.2rem 1.3rem !important;
+    }
+
     .stat-card {
         background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 1.1rem;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .stat-card .card-body {
+        padding: 1.15rem !important;
+    }
+
     .primary-card { background: linear-gradient(135deg, #eef4ff 0%, #ffffff 100%); }
     .info-card { background: linear-gradient(135deg, #e8f7ff 0%, #ffffff 100%); }
     .success-card { background: linear-gradient(135deg, #ecfdf3 0%, #ffffff 100%); }
     .warning-card { background: linear-gradient(135deg, #fff8e8 0%, #ffffff 100%); }
+
+    .stat-card h6 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.6rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    @media (max-width: 768px) {
+        .page-card .card-body {
+            padding: 1rem 1.1rem !important;
+        }
+
+        .stat-card .card-body {
+            padding: 0.95rem !important;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+        }
+    }
 </style>
 {% endblock %}

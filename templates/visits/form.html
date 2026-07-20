@@ -125,20 +125,25 @@
 <style>
     .compact-page {
         padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
+        padding-bottom: 1rem !important;
     }
 
     .page-card {
         border-radius: 1.15rem;
-        box-shadow: 0 14px 35px rgba(47, 62, 70, 0.10);
-        border: 1px solid rgba(82, 121, 111, 0.12);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
+    }
+
+    .page-card .card-body {
+        padding: 1.5rem !important;
     }
 
     .form-section {
-        border: 1px solid #eef3ee;
+        border: 1px solid #e2e8f0;
         border-radius: 1rem;
-        padding: 0.75rem 0.85rem 0.6rem;
-        margin-bottom: 0.55rem;
+        padding: 1rem 1.1rem 0.9rem;
+        margin-bottom: 0.75rem;
         background: linear-gradient(180deg, #fcfefd 0%, #ffffff 100%);
     }
 
@@ -147,7 +152,7 @@
         align-items: center;
         color: #2F3E46;
         font-weight: 700;
-        margin-bottom: 0.45rem;
+        margin-bottom: 0.7rem;
         font-size: 0.95rem;
         letter-spacing: 0.01em;
     }
@@ -155,24 +160,25 @@
     .field-group {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.35rem;
     }
 
     .field-group .form-label {
         color: #2F3E46;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        margin-bottom: 0;
     }
 
     .field-group .form-control,
     .field-group .form-select,
     .field-group textarea {
-        min-height: 2.45rem;
-        border-radius: 0.8rem;
+        min-height: 2.65rem;
+        border-radius: 0.9rem;
         border: 1px solid #dfe8de;
-        padding: 0.55rem 0.82rem;
+        padding: 0.7rem 0.9rem;
         background: #fff;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
     }
 
     .field-group .form-control:focus,
@@ -180,11 +186,14 @@
     .field-group textarea:focus {
         border-color: #52796F;
         box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.16);
+        background-color: #fcfefd;
     }
 
     .field-group textarea {
-        min-height: 4.1rem;
+        min-height: 4.4rem;
         resize: vertical;
+        font-size: 0.95rem;
+        line-height: 1.5;
     }
 
     .field-group input[type="date"]::-webkit-calendar-picker-indicator,
@@ -195,10 +204,10 @@
 
     .validation-message {
         color: #b42318;
-        font-size: 0.86rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        padding: 0.3rem 0.45rem;
-        border-radius: 0.6rem;
+        padding: 0.4rem 0.55rem;
+        border-radius: 0.65rem;
         background: #fef3f2;
         border: 1px solid #f3c5bf;
     }
@@ -207,14 +216,18 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
-        gap: 0.7rem;
-        padding-top: 0.4rem;
-        border-top: 1px solid #eef3ee;
+        gap: 0.75rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid #e2e8f0;
     }
 
     @media (max-width: 767.98px) {
         .form-section {
-            padding: 0.9rem 0.85rem 0.75rem;
+            padding: 1rem 1rem 0.85rem;
+        }
+
+        .page-card .card-body {
+            padding: 1.2rem !important;
         }
 
         .sticky-actions {
@@ -223,6 +236,11 @@
 
         .sticky-actions .btn {
             flex: 1 1 0;
+        }
+
+        .compact-page {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.75rem !important;
         }
     }
 </style>

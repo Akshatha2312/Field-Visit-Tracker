@@ -59,8 +59,8 @@
 
 <style>
     .compact-page {
-        padding-top: 0.25rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 1rem !important;
     }
 
     .page-card {
@@ -70,9 +70,15 @@
         background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
     }
 
+    .page-card .card-body {
+        padding: 1.5rem !important;
+    }
+
     .form-label {
-        margin-bottom: 0.45rem;
+        margin-bottom: 0.55rem;
         color: #354F52;
+        font-weight: 600;
+        font-size: 0.95rem;
     }
 
     .form-control,
@@ -80,19 +86,21 @@
         min-height: 2.7rem;
         border-radius: 0.9rem;
         border: 1px solid #dfe8de;
-        padding: 0.65rem 0.9rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        padding: 0.7rem 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
     }
 
     .form-control:focus,
     .form-select:focus {
         border-color: #52796F;
         box-shadow: 0 0 0 0.2rem rgba(82, 121, 111, 0.16);
+        background-color: #fcfefd;
     }
 
     .validation-message {
         color: #b42318;
         font-size: 0.85rem;
+        font-weight: 600;
         min-height: 1.2rem;
     }
 
@@ -104,6 +112,15 @@
     @media (max-width: 767.98px) {
         .btn {
             width: 100%;
+        }
+
+        .page-card .card-body {
+            padding: 1.2rem !important;
+        }
+
+        .compact-page {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.75rem !important;
         }
     }
 </style>

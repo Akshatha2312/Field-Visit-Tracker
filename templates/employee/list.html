@@ -116,20 +116,62 @@
 
 <style>
     .compact-page {
-        padding-top: 0.25rem !important;
-        padding-bottom: 0.75rem !important;
+        padding-top: 0.5rem !important;
+        padding-bottom: 1rem !important;
     }
 
     .page-card {
         border: 1px solid #e2e8f0;
         border-radius: 1.15rem;
         box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+        background: linear-gradient(180deg, #ffffff 0%, #fcfefd 100%);
+    }
+
+    .page-card .card-body {
+        padding: 1.2rem 1.3rem !important;
     }
 
     .table th,
     .table td {
-        padding-top: 0.7rem;
-        padding-bottom: 0.7rem;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        background: linear-gradient(180deg, #f7faf7 0%, #eef4ee 100%);
+        color: var(--brand-dark);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #f0f3f0;
+        transition: background-color 0.15s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #fafbfa;
+    }
+
+    @media (max-width: 768px) {
+        .compact-page {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+
+        .page-card .card-body {
+            padding: 1rem 1.1rem !important;
+        }
+
+        .table th,
+        .table td {
+            padding-top: 0.65rem;
+            padding-bottom: 0.65rem;
+            font-size: 0.9rem;
+        }
     }
 </style>
 {% endblock %}
