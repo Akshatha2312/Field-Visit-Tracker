@@ -957,12 +957,34 @@
             });
         });
 
-        // Handle form submissions
+        // Handle form submissions: set loading only on the button that submitted the form
         document.querySelectorAll('form').forEach(function (form) {
-            form.addEventListener('submit', function () {
-                const submitButtons = form.querySelectorAll('button[type="submit"].btn-loading');
-                submitButtons.forEach(function(btn) {
-                    setLoadingState(btn, true);
+            form.addEventListener('submit', function (event) {
+                try {
+                    const submitter = event && event.submitter;
+                    if (submitter && submitter.matches && submitter.matches('button[type="submit"].btn-loading')) {
+                        setLoadingState(submitter, true);
+                        return;
+                    }
+                } catch (e) {
+                    // ignore and fall back
+                }
+
+                // Fallback for older browsers: detect recently clicked submit button
+                const clicked = form.querySelector('button[type="submit"].btn-loading[data-clicked="true"]');
+                if (clicked) {
+                    setLoadingState(clicked, true);
+                    return;
+                }
+
+                // Last resort: do nothing (avoid enabling all buttons to loading state)
+            });
+
+            // Attach a short-lived marker when a submit button is clicked so fallback can find it
+            form.querySelectorAll('button[type="submit"].btn-loading').forEach(function(btn){
+                btn.addEventListener('click', function () {
+                    btn.dataset.clicked = 'true';
+                    setTimeout(function () { delete btn.dataset.clicked; }, 1000);
                 });
             });
         });

@@ -96,26 +96,64 @@ def build_pdf_response(context):
     story.append(Paragraph("Visit Details", heading_style))
     visits = context.get("visits", [])
     if visits:
-        table_rows = [["Employee", "Client Name", "Company Name", "Visit Date", "Status"]]
+        # Build Paragraph styles for table cells so long text wraps correctly
+        cell_style = ParagraphStyle(
+            name="TableCell",
+            parent=styles["BodyText"],
+            fontSize=9,
+            leading=11,
+            textColor=colors.HexColor("#000000"),
+            alignment=TA_LEFT,
+        )
+        header_cell_style = ParagraphStyle(
+            name="TableHeaderCell",
+            parent=styles["BodyText"],
+            fontSize=10,
+            leading=12,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#1f4e79"),
+        )
+
+        # Create header row with Paragraphs
+        header = [
+            Paragraph("Employee", header_cell_style),
+            Paragraph("Client Name", header_cell_style),
+            Paragraph("Company Name", header_cell_style),
+            Paragraph("Visit Date", header_cell_style),
+            Paragraph("Status", header_cell_style),
+        ]
+
+        table_rows = [header]
         for visit in visits:
+            emp = visit.employee.name if visit.employee else "-"
             table_rows.append(
                 [
-                    visit.employee.name if visit.employee else "-",
-                    visit.client_name,
-                    visit.company_name,
-                    str(visit.visit_date),
-                    visit.status,
+                    Paragraph(emp, cell_style),
+                    Paragraph(visit.client_name or "-", cell_style),
+                    Paragraph(visit.company_name or "-", cell_style),
+                    Paragraph(str(visit.visit_date), ParagraphStyle(name="DateCell", parent=cell_style, alignment=TA_CENTER)),
+                    Paragraph(visit.status or "-", ParagraphStyle(name="StatusCell", parent=cell_style, alignment=TA_CENTER)),
                 ]
             )
-        details_table = Table(table_rows, repeatRows=1, colWidths=[1.1 * inch, 1.2 * inch, 1.2 * inch, 1.0 * inch, 0.9 * inch])
+
+        # Calculate column widths to fit within page margins (letter width 8.5in, margins total 1.5in -> usable 7.0in)
+        details_col_widths = [2.0 * inch, 2.0 * inch, 1.7 * inch, 0.8 * inch, 0.5 * inch]
+
+        details_table = Table(table_rows, repeatRows=1, colWidths=details_col_widths)
         details_table.setStyle(
             TableStyle(
                 [
                     ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9f2ff")),
                     ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                     ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#d9dee8")),
-                    ("PADDING", (0, 0), (-1, -1), 6),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1f4e79")),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("ALIGN", (0, 1), (2, -1), "LEFT"),
+                    ("ALIGN", (3, 1), (4, -1), "CENTER"),
                 ]
             )
         )

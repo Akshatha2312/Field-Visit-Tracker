@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.db import transaction
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from dashboard.models import ActivityLog
@@ -118,7 +119,12 @@ def visit_create(request):
                 title="Visit Created",
                 description=f"{employee.name} created a visit for {visit.client_name}.",
             )
-            send_visit_created_email(employee, visit)
+            # Ensure email is sent only after DB transaction successfully commits
+            try:
+                transaction.on_commit(lambda: send_visit_created_email(employee, visit))
+            except Exception:
+                # Fall back to immediate send and log any exception inside utils
+                send_visit_created_email(employee, visit)
             messages.success(request, "Client visit added successfully.")
             return redirect("visits:list")
     else:

@@ -8,6 +8,9 @@ A web-based Field Visit Tracker System built using **Python**, **Django**, **SQL
 
 🔗 https://field-visit-tracker-cmoq.onrender.com
 
+## Youtube Link
+🔗 https://youtu.be/t6eHtXQa7uA
+
 ---
 
 ## 📌 Project Overview
@@ -15,6 +18,17 @@ A web-based Field Visit Tracker System built using **Python**, **Django**, **SQL
 The Field Visit Tracker System is designed to simplify the management of employees who perform field visits. It provides an organized platform to manage employees, record attendance, schedule and track client visits, and generate reports for better monitoring.
 
 The system includes an administrator panel that allows complete control over employee records, attendance management, and visit tracking.
+
+---
+
+## 🎯 Project Objectives
+
+- Simplify employee field visit management.
+- Maintain accurate employee attendance records.
+- Track client visits efficiently.
+- Generate detailed reports for monitoring and analysis.
+- Provide a centralized dashboard for administrators.
+- Improve productivity through automated email notifications.
 
 ---
 
@@ -59,20 +73,86 @@ The system includes an administrator panel that allows complete control over emp
 
 ---
 
+## 🔄 Application Workflow
+
+Admin Login
+↓
+Manage Employees
+↓
+Employee Login
+↓
+Check-In
+↓
+Create Client Visit
+↓
+Check-Out
+↓
+Generate Reports
+↓
+Email Notifications
+
+---
+
+## 📸 Application Screenshots
+
+### Authentication
+![Login Page](Images/02-Login-Page.png)
+
+### Dashboard
+![Home Page](Images/01-Home-Page.png)
+![Admin Dashboard](Images/17-Admin-Dashboard.png)
+
+### Employee Management
+![Employee Details](Images/05-Employee Details.png)
+![Add Employee](Images/06-Add Employee.png)
+![Profile](Images/13-Profile.png)
+
+### Attendance Management
+![Attendance Management](Images/03-Attendance Management.png)
+![Employee Attendance](Images/09-Attendance (Emp).png)
+
+### Client Visit Management
+![Client Visit](Images/04-Client-Visit.png)
+
+### Reports
+![Analytics](Images/07-Analytics.png)
+![Generated Reports](Images/08-Generated Reports.png)
+![Reports](Images/14-Reports.png)
+
+### Email Notifications
+![Welcome Email](Images/16-Welcome Email.png)
+![Visit Email](Images/15-Visit-Email.png)
+
+---
+
 # 🛠️ Technology Stack
 
-| Technology | Used |
-|------------|------|
-| Python | ✔ |
-| Django | ✔ |
-| SQLite | ✔ |
-| HTML5 | ✔ |
-| CSS3 | ✔ |
-| Bootstrap | ✔ |
-| JavaScript | ✔ |
-| Git | ✔ |
-| GitHub | ✔ |
-| Render | ✔ |
+| Technology | Purpose |
+|------------|---------|
+| Python | Backend Programming |
+| Django | Web Framework |
+| SQLite | Database Management |
+| HTML5 | Page Structure |
+| CSS3 | Styling |
+| Bootstrap | Responsive User Interface |
+| JavaScript | Client-side Interactivity |
+| Git | Version Control |
+| GitHub | Repository Hosting |
+| Render | Cloud Deployment |
+
+---
+
+## 🏗️ System Architecture
+
+User
+↓
+Django Views
+↓
+Models
+↓
+SQLite Database
+↓
+Reports & Email Notifications
 
 ---
 
@@ -94,6 +174,16 @@ FieldVisitTracker/
 ├── requirements.txt
 └── README.md
 ```
+
+---
+
+## 📋 Requirements
+
+- Python 3.11 or above
+- Django 5.x
+- Bootstrap 5
+- SQLite
+- Git
 
 ---
 
@@ -163,11 +253,12 @@ The application is deployed using **Render**.
 
 Deployment includes:
 
-- Gunicorn
-- WhiteNoise
-- Static File Collection
-- Automatic Database Migration
-- Automatic Admin User Creation
+- Hosted on Render
+- Gunicorn WSGI Server
+- WhiteNoise for Static Files
+- SQLite Database
+- Automatic Static File Collection
+- Production-ready Django Configuration
 
 ---
 
@@ -177,50 +268,12 @@ For deployed demo:
 
 ```
 Username : admin
-Password : Admin@123
+Password : adminadmin
 ```
 
 ---
 
-# 📸 Screenshots
-
-## Login Page
-
-(Add Screenshot)
-
----
-
-## Dashboard
-
-(Add Screenshot)
-
----
-
-## Employee Management
-
-(Add Screenshot)
-
----
-
-## Attendance Module
-
-(Add Screenshot)
-
----
-
-## Client Visit Module
-
-(Add Screenshot)
-
----
-
-## Reports
-
-(Add Screenshot)
-
----
-
-# 📋 Modules
+## 📦 Project Modules
 
 - Authentication
 - Dashboard
@@ -232,6 +285,21 @@ Password : Admin@123
 
 ---
 
+## 🧪 Testing
+
+The following modules were tested:
+
+- Login & Logout
+- Employee CRUD Operations
+- Attendance CRUD Operations
+- Client Visit CRUD Operations
+- Dashboard
+- Reports
+- Email Notifications
+- Django Admin Panel
+
+---
+
 # 🔒 Security Features
 
 - Authentication System
@@ -239,52 +307,34 @@ Password : Admin@123
 - Session Authentication
 - CSRF Protection
 - Input Validation
-
----
-
-# 📈 Future Enhancements
-
-- Email Notifications
-- GPS Location Tracking
-- QR Attendance
-- Mobile Responsive Dashboard
-- Employee Profile Photos
-- Analytics Dashboard
-- Export Reports to Excel/PDF
-- REST API Integration
-- Role-Based Access Control
-- MySQL Database Support
-
----
-
-# 🧪 Testing
-
-Tested Modules
-
-- Login
-- Logout
-- Employee CRUD
-- Attendance CRUD
-- Client Visit CRUD
-- Dashboard
-- Reports
-- Django Admin
+- Form Validation
 
 ---
 
 # 📚 Learning Outcomes
 
-Through this project I learned:
+- Django MVC Architecture
+- User Authentication
+- Role-based Access Control
+- Client Visit Tracking
+- Report Generation
+- Email Notification Workflows
+- Django Template Engine
+- Email Integration
+- Report Generation
 
-- Django Framework
-- Django ORM
-- Authentication & Authorization
-- CRUD Operations
-- SQLite Database
-- Bootstrap UI Development
-- Static File Management
-- Deployment on Render
-- Git & GitHub Workflow
+---
+
+# 📈 Future Enhancements
+
+- GPS Location Tracking
+- Google Maps Integration
+- Mobile Application
+- Push Notifications
+- Dark Mode
+- AI-Based Visit Analytics
+- MySQL/PostgreSQL Support
+- Multi-language Support
 
 ---
 
